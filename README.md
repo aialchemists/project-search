@@ -2,7 +2,7 @@
 
 ### 1. Install pip dependencies
 ```
-pip install tika numpy spacy psycopg2-binary
+pip install tika numpy spacy psycopg2-binary nose
 python -m spacy download en_core_web_lg
 ```
 
@@ -25,5 +25,9 @@ Copy PDFs into ./data-pdfs directory
 ```
 python extract_pipeline.py
 ```
-
 After a successful run, data would be available in the database.
+
+### 5. Run UTs
+```
+nosetests --nocapture
+```
