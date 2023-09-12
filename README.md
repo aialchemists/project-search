@@ -30,4 +30,7 @@ After a successful run, data would be available in the database.
 ### 5. Run UTs
 ```
 nosetests --nocapture
+
+# To run specific test
+nosetests --nocapture core/test_chunk.py:test_chunkify
 ```
