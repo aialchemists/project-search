@@ -1,5 +1,4 @@
-#!pip install  tika
-
+import os
 from tika import parser
 
 from .file_data import FileData
@@ -11,7 +10,6 @@ def parse_file(file_path) -> FileData:
     try:
         results = parser.from_file(file_path)
 
-        file_name=results['metadata']['resourceName'][2:-1]
         metadata=results['metadata'] # TODO: Cleanup metadata
         content=results['content']
 
@@ -19,9 +17,9 @@ def parse_file(file_path) -> FileData:
             content = content.strip()
         else:
             content = ''
-            print(f"Content not available for file {file_name}")
+            print(f"Content not available for file {file_path}")
 
-        return FileData(id=file_name, file_name=file_name, content=content, metadata=metadata)
+        return FileData(id=file_path, file_path=file_path, content=content, metadata=metadata)
     except Exception as e:
         print(f"An error occurred while parsing '{file_path}': {e}")
         raise e

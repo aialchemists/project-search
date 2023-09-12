@@ -33,9 +33,9 @@ class DB:
     def save_file(self, data: FileData):
         with self.conn.cursor() as cursor:
             metadata = json.dumps(data.metadata)
-            cursor.execute("INSERT INTO files VALUES (%s,%s,%s)", (data.id, data.file_name, metadata))
+            cursor.execute("INSERT INTO files VALUES (%s,%s,%s)", (data.id, data.file_path, metadata))
             self.conn.commit()
-            print(f"Saved details of file {data.file_name}")
+            print(f"Saved details of file {data.file_path}")
 
     def save_chunk(self, data: FileData, chunk_text: str, start_position: int):
         file_id = data.id
