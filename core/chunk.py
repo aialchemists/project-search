@@ -31,7 +31,6 @@ def degree_to_threshold(degree):
 
 def chunkify(text, degree = 45):
     # Initialize the clusters lengths list and final texts list
-    chunk_lengths = []
     chunks = []
 
     # Process the chunk
@@ -62,11 +61,9 @@ def chunkify(text, degree = 45):
                 if div_len < 60 or div_len > 3000:
                     continue
 
-                chunk_lengths.append(div_len)
                 chunks.append(div_txt)
 
         else:
-            chunk_lengths.append(cluster_len)
             chunks.append(cluster_txt)
 
-    return zip(chunks, chunk_lengths)
+    return chunks

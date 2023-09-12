@@ -12,9 +12,9 @@ def process_local_file(file_path, db: DB):
     # Step 2
     chunks = chunkify(file_data.content)
     start_position = 0
-    for chunk, length in chunks:
+    for chunk in chunks:
         db.save_chunk(file_data, chunk, start_position)
-        start_position += length
+        start_position += len(chunk)
 
 def process_local_dir(directory_path):
     if not os.path.exists(directory_path):
