@@ -1,14 +1,19 @@
 # pip install psycopg2-binary
 
+from pathlib import Path
+import os
+
 import psycopg2
 import json
 
 from .file_data import FileData
+from utils.configs import db_configs
+
+_SCHEMA = Path(os.getcwd()).joinpath('core/db_schema.sql').read_text()
 
 def _init_connection():
     try:
-      conn = psycopg2.connect("dbname='llm_vdb' user='postgres' host='localhost' port='5431' password='mysecretpassword'")
-      print("Connected to the database")
+      conn = psycopg2.connect(db_configs.get_dsn())
       return conn
     except Exception as exc:
       print(exc)
