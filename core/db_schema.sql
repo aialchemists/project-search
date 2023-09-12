@@ -16,14 +16,16 @@ create table files(
 chunks
   - id - int
   - file_id - int
-  - text - string
-  - position - int
+  - chunk_text - string
+  - embedding - float ARRAY (Need to investigate pgvector: https://github.com/pgvector/pgvector)
+  - start_position - int
   - length - int
 */
 create table chunks(
 	id SERIAL,
 	file_id VARCHAR(1024),
 	chunk_text TEXT,
+	embedding float ARRAY,
 	start_position int,
 	length int,
 

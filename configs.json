@@ -9,5 +9,8 @@
   "chunk": {
     "max_length": 3000,
     "degree": 45
+  },
+  "embedding": {
+    "model": "all-MiniLM-L6-v2"
   }
 }

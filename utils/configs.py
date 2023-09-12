@@ -23,3 +23,9 @@ class ChunkConfigs:
     degree: int
 
 chunk_configs = ChunkConfigs(**_data["chunk"])
+
+@dataclass
+class EmbeddingConfigs:
+    model: str
+
+embedding_configs = EmbeddingConfigs(**_data["embedding"])

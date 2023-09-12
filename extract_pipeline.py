@@ -3,6 +3,7 @@ import os
 from core.tika import parse_file
 from core.chunk import chunkify
 from core.db import DB
+from core.embedding import embed_text
 
 def process_local_file(file_path, db: DB):
     # Step 1
@@ -13,7 +14,8 @@ def process_local_file(file_path, db: DB):
     chunks = chunkify(file_data.content)
     start_position = 0
     for chunk in chunks:
-        db.save_chunk(file_data, chunk, start_position)
+        embedding = embed_text(chunk)
+        db.save_chunk(file_data, chunk, embedding, start_position)
         start_position += len(chunk)
 
 def process_local_dir(directory_path):

@@ -5,6 +5,7 @@ import os
 
 import psycopg2
 import json
+from typing import List
 
 from .file_data import FileData
 from utils.configs import db_configs
@@ -37,11 +38,13 @@ class DB:
             self.conn.commit()
             print(f"Saved details of file {data.file_path}")
 
-    def save_chunk(self, data: FileData, chunk_text: str, start_position: int):
+    def save_chunk(self, data: FileData, chunk_text: str, embedding: List[float], start_position: int):
         file_id = data.id
         chunk_length = len(chunk_text)
         with self.conn.cursor() as cursor:
-            cursor.execute("INSERT INTO chunks (file_id, chunk_text, start_position, length) VALUES (%s,%s,%s,%s)", (file_id, chunk_text, start_position, chunk_length))
+            cursor.execute("INSERT INTO chunks (file_id, chunk_text, embedding, start_position, length) "
+                           "VALUES (%s,%s,%s,%s,%s)",
+                           (file_id, chunk_text, embedding, start_position, chunk_length))
             self.conn.commit()
             print(f"Saved chunk of file {file_id} from position {start_position}")
 
