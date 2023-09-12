@@ -5,9 +5,11 @@ from core.chunk import chunkify
 from core.db import DB
 
 def process_local_file(file_path, db: DB):
+    # Step 1
     file_data = parse_file(file_path)
     db.save_file(file_data)
 
+    # Step 2
     chunks = chunkify(file_data.content)
     start_position = 0
     for chunk, length in chunks:

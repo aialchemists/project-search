@@ -41,9 +41,9 @@ class DB:
         file_id = data.id
         chunk_length = len(chunk_text)
         with self.conn.cursor() as cursor:
-            cursor.execute(f"INSERT INTO chunks (file_id, chunk_text, start_position, length) VALUES (%s,%s,%s,%s)", (file_id, chunk_text, start_position, chunk_length))
+            cursor.execute("INSERT INTO chunks (file_id, chunk_text, start_position, length) VALUES (%s,%s,%s,%s)", (file_id, chunk_text, start_position, chunk_length))
             self.conn.commit()
-            print(f"Saved chunk of file {file_id}")
+            print(f"Saved chunk of file {file_id} from position {start_position}")
 
     def close(self):
         self.conn.close()
