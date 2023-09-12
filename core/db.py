@@ -24,10 +24,16 @@ class DB:
     def __init__(self):
         self.conn = _init_connection()
 
+    def migrate(self):
+        with self.conn.cursor() as cursor:
+            cursor.execute(_SCHEMA)
+            self.conn.commit()
+            return _SCHEMA
+
     def save_file(self, data: FileData):
         with self.conn.cursor() as cursor:
             metadata = json.dumps(data.metadata)
-            cursor.execute(f"INSERT INTO files VALUES (%s,%s,%s)", (data.id, data.file_name, metadata))
+            cursor.execute("INSERT INTO files VALUES (%s,%s,%s)", (data.id, data.file_name, metadata))
             self.conn.commit()
             print(f"Saved details of file {data.file_name}")
 

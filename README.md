@@ -1,23 +1,27 @@
 # Vector Search
 
-### Install Dependencies
+### 1. Install pip dependencies
 ```
 pip install tika numpy spacy psycopg2-binary
 python -m spacy download en_core_web_lg
 ```
 
-### Start postgres database locally
+### 2. Start and setup database
+2.a To start postgres in docker locally
 ```
-docker run -p 5431:5432 --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword -d postgres
+docker run -p 5431:5432 --name vs-postgres -e POSTGRES_PASSWORD=mysecretpassword -d postgres
+```
+2.b To setup the database
+```
+python db_migrate.py
 ```
 
-### Prereqs
+### 3. Load documents
 ```
 Copy PDFs into ./data-pdfs directory
 ```
 
-### Run extract pipeline
-
+### 4. Run extract pipeline
 ```
 python extract_pipeline.py
 ```

@@ -1,5 +1,5 @@
 /**
-  files
+files
   - id - string
   - file_path - string
   - metadata - JSONB
