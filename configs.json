@@ -5,5 +5,9 @@
     "user": "postgres",
     "password": "mysecretpassword",
     "dbname": "postgres"
+  },
+  "chunk": {
+    "max_length": 3000,
+    "degree": 45
   }
 }

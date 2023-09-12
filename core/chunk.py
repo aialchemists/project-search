@@ -1,4 +1,5 @@
 from typing import List
+from utils.configs import chunk_configs
 
 import numpy as np
 import spacy
@@ -42,14 +43,14 @@ def get_sentence_clusters(text, degree) -> List[str]:
 
     return sentence_clusters
 
-def chunkify(text, degree: float = 45, recursion_level = 1) -> List[str]:
+def chunkify(text, degree: float = chunk_configs.degree, recursion_level = 1) -> List[str]:
     # Initialize the clusters lengths list and final texts list
     chunks = []
 
     sentence_clusters = get_sentence_clusters(text, degree)
     for sentence_cluster in sentence_clusters:
         # Check if the cluster is too longs
-        if len(sentence_cluster) > 3000 and recursion_level >= 1:
+        if len(sentence_cluster) > chunk_configs.max_length and recursion_level >= 1:
             split_chunks = chunkify(sentence_cluster, degree * 0.5, recursion_level - 1)
             chunks.extend(split_chunks)
         else:

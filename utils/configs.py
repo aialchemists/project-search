@@ -16,3 +16,10 @@ class DBConfigs:
         return  f"dbname='{self.dbname}' user='{self.user}' host='{self.host}' port='{self.port}' password='{self.password}'"
 
 db_configs = DBConfigs(**_data["db"])
+
+@dataclass
+class ChunkConfigs:
+    max_length: int
+    degree: int
+
+chunk_configs = ChunkConfigs(**_data["chunk"])
