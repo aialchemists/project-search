@@ -44,12 +44,8 @@ def chunkify(text, degree = 45):
         cluster_txt = ' '.join([sents[i].text for i in cluster])
         cluster_len = len(cluster_txt)
 
-        # Check if the cluster is too short
-        if cluster_len < 60:
-            continue
-
         # Check if the cluster is too longs
-        elif cluster_len > 3000:
+        if cluster_len > 3000:
             threshold = degree_to_threshold(degree * 0.5)
             sents_div, vecs_div = process(cluster_txt)
             reclusters = cluster_text(sents_div, vecs_div, threshold)
@@ -58,7 +54,7 @@ def chunkify(text, degree = 45):
                 div_txt = ' '.join([sents_div[i].text for i in subcluster])
                 div_len = len(div_txt)
 
-                if div_len < 60 or div_len > 3000:
+                if div_len > 3000:
                     continue
 
                 chunks.append(div_txt)
