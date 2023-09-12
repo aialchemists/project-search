@@ -3,6 +3,7 @@
 
 import numpy as np
 import spacy
+import math
 
 # Load the Spacy model
 nlp = spacy.load('en_core_web_lg')
@@ -23,38 +24,39 @@ def cluster_text(sents, vecs, threshold):
 
     return clusters
 
-def clean_text(text):
-    # Add your text cleaning process here
-    return text
+def degree_to_threshold(degree):
+    radian = degree * math.pi / 180
+    threshold = math.cos(radian)
+    return threshold
 
-def chunkify(text):
+def chunkify(text, degree = 45):
     # Initialize the clusters lengths list and final texts list
     chunk_lengths = []
     chunks = []
 
     # Process the chunk
-    threshold = 0.707
+    threshold = degree_to_threshold(degree)
     sents, vecs = process(text)
 
     # Cluster the sentences
     clusters = cluster_text(sents, vecs, threshold)
 
     for cluster in clusters:
-        cluster_txt = clean_text(' '.join([sents[i].text for i in cluster]))
+        cluster_txt = ' '.join([sents[i].text for i in cluster])
         cluster_len = len(cluster_txt)
 
         # Check if the cluster is too short
         if cluster_len < 60:
             continue
 
-        # Check if the cluster is too long
+        # Check if the cluster is too longs
         elif cluster_len > 3000:
-            threshold = 0.6
+            threshold = degree_to_threshold(degree * 0.5)
             sents_div, vecs_div = process(cluster_txt)
             reclusters = cluster_text(sents_div, vecs_div, threshold)
 
             for subcluster in reclusters:
-                div_txt = clean_text(' '.join([sents_div[i].text for i in subcluster]))
+                div_txt = ' '.join([sents_div[i].text for i in subcluster])
                 div_len = len(div_txt)
 
                 if div_len < 60 or div_len > 3000:
