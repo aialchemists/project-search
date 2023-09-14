@@ -28,4 +28,4 @@ def process_local_dir(directory_path):
         if not os.path.basename(path).startswith("."):
             process_local_file(path, db)
 
-process_local_dir("./data-pdfs/")
+process_local_dir("./data/")
