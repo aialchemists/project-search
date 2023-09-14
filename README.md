@@ -40,7 +40,14 @@ nosetests --nocapture core/test_chunk.py:test_chunkify
 ```
 
 ### 6. Start Server
-
 ```
 uvicorn server:app --reload
+```
+
+### 6. Start Client
+```
+cd client
+npm start
+
+UI must be available at http://localhost:3000
 ```
