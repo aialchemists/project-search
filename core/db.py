@@ -34,7 +34,8 @@ class DB:
     def save_file(self, data: FileData) -> int:
         with self.conn.cursor() as cursor:
             metadata = json.dumps(data.metadata)
-            cursor.execute("INSERT INTO file (file_path, metadata) VALUES (%s,%s) RETURNING *", (data.file_path, metadata))
+            cursor.execute("INSERT INTO file (file_path, content, metadata) "
+                           "VALUES (%s,%s,%s) RETURNING *", (data.file_path, data.content, metadata))
             self.conn.commit()
 
             inserted_row = cursor.fetchone()

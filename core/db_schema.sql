@@ -7,6 +7,7 @@ file - Each row is a file that we have extracted
 create table file (
   file_id SERIAL UNIQUE,
   file_path TEXT,
+  content TEXT,
   metadata JSONB,
 
   CONSTRAINT unique_file_path UNIQUE (file_path)
