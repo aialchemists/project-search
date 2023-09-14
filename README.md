@@ -1,7 +1,12 @@
 # Vector Search
 
-### 1. Install pip dependencies
+### 1. Create a virtual environment and install pip dependencies
+Ensure you have python 3.9.16
 ```
+pip install virtualenv
+virtualenv vs_env
+source vs_env/bin/activate
+
 pip install -r requirements.txt
 ```
 
