@@ -5,7 +5,7 @@ from utils.configs import configs
 
 app = FastAPI(title="Vector Search - APIs")
 
-@app.get("/")
+@app.get("/", include_in_schema=False)
 async def root_api():
     response = RedirectResponse(url='/docs')
     return response
