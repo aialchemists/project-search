@@ -2,8 +2,7 @@
 
 ### 1. Install pip dependencies
 ```
-pip install tika numpy spacy psycopg2-binary nose
-python -m spacy download en_core_web_lg
+pip install -r requirements.txt
 ```
 
 ### 2. Start and setup database
@@ -11,14 +10,14 @@ python -m spacy download en_core_web_lg
 ```
 docker run -p 5431:5432 --name vs-postgres -e POSTGRES_PASSWORD=mysecretpassword -d postgres
 ```
-2.b To setup the database
+2.b To create tables and setup the database
 ```
 python db_migrate.py
 ```
 
 ### 3. Load documents
 ```
-Copy PDFs into ./data-pdfs directory
+Copy files into ./data directory
 ```
 
 ### 4. Run extract pipeline
@@ -33,4 +32,10 @@ nosetests --nocapture
 
 # To run specific test
 nosetests --nocapture core/test_chunk.py:test_chunkify
+```
+
+### 6. Start Server
+
+```
+uvicorn server:app --reload
 ```

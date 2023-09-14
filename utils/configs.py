@@ -2,7 +2,7 @@ import json
 from dataclasses import dataclass
 
 _file = open('./configs.json')
-_data = json.load(_file)
+configs = json.load(_file)
 
 @dataclass
 class DBConfigs:
@@ -15,17 +15,17 @@ class DBConfigs:
     def get_dsn(self):
         return  f"dbname='{self.dbname}' user='{self.user}' host='{self.host}' port='{self.port}' password='{self.password}'"
 
-db_configs = DBConfigs(**_data["db"])
+db_configs = DBConfigs(**configs["db"])
 
 @dataclass
 class ChunkConfigs:
     max_length: int
     degree: int
 
-chunk_configs = ChunkConfigs(**_data["chunk"])
+chunk_configs = ChunkConfigs(**configs["chunk"])
 
 @dataclass
 class EmbeddingConfigs:
     model: str
 
-embedding_configs = EmbeddingConfigs(**_data["embedding"])
+embedding_configs = EmbeddingConfigs(**configs["embedding"])
