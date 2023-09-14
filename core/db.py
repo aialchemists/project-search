@@ -31,22 +31,33 @@ class DB:
             self.conn.commit()
             return _SCHEMA
 
-    def save_file(self, data: FileData):
+    def save_file(self, data: FileData) -> int:
         with self.conn.cursor() as cursor:
             metadata = json.dumps(data.metadata)
-            cursor.execute("INSERT INTO files VALUES (%s,%s,%s)", (data.id, data.file_path, metadata))
+            cursor.execute("INSERT INTO file (file_path, metadata) VALUES (%s,%s) RETURNING *", (data.file_path, metadata))
             self.conn.commit()
-            print(f"Saved details of file {data.file_path}")
 
-    def save_chunk(self, data: FileData, chunk_text: str, embedding: List[float], start_position: int):
-        file_id = data.id
+            inserted_row = cursor.fetchone()
+            if inserted_row:
+              print(f"Saved details of file {data.file_path}")
+              return inserted_row[0]
+            else:
+              raise Exception("Insert into file table failed")
+
+    def save_chunk(self, file_id: int, chunk_text: str, embedding: List[float], start_position: int):
         chunk_length = len(chunk_text)
         with self.conn.cursor() as cursor:
-            cursor.execute("INSERT INTO chunks (file_id, chunk_text, embedding, start_position, length) "
-                           "VALUES (%s,%s,%s,%s,%s)",
+            cursor.execute("INSERT INTO chunk (file_id, chunk_text, embedding, start_position, length) "
+                           "VALUES (%s,%s,%s,%s,%s) RETURNING *",
                            (file_id, chunk_text, embedding, start_position, chunk_length))
             self.conn.commit()
-            print(f"Saved chunk of file {file_id} from position {start_position}")
+
+            inserted_row = cursor.fetchone()
+            if inserted_row:
+              print(f"Saved chunk of file id {file_id} from position {start_position}")
+              return inserted_row[0]
+            else:
+              raise Exception("Insert into chunk table failed")
 
     def close(self):
         self.conn.close()

@@ -19,7 +19,7 @@ def parse_file(file_path) -> FileData:
             content = ''
             print(f"Content not available for file {file_path}")
 
-        return FileData(id=file_path, file_path=file_path, content=content, metadata=metadata)
+        return FileData(file_path=file_path, content=content, metadata=metadata)
     except Exception as e:
         print(f"An error occurred while parsing '{file_path}': {e}")
         raise e

@@ -8,15 +8,15 @@ from core.embedding import embed_text
 def process_local_file(file_path, db: DB):
     # Step 1
     file_data = parse_file(file_path)
-    db.save_file(file_data)
+    file_id = db.save_file(file_data)
 
     # Step 2
     chunks = chunkify(file_data.content)
     start_position = 0
-    for chunk in chunks:
-        embedding = embed_text(chunk)
-        db.save_chunk(file_data, chunk, embedding, start_position)
-        start_position += len(chunk)
+    for chunk_text in chunks:
+        embedding = embed_text(chunk_text)
+        db.save_chunk(file_id, chunk_text, embedding, start_position)
+        start_position += len(chunk_text)
 
 def process_local_dir(directory_path):
     if not os.path.exists(directory_path):
