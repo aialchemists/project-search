@@ -34,6 +34,11 @@ const SourceLink = styled.a`
 
 const LOADING = Symbol();
 
+function getFileName(path) {
+  const parts = path.split("/");
+  return parts[parts.length - 1];
+}
+
 function App() {
   const [configs, setConfigs] = useState(null);
   useEffect(() => {
@@ -62,10 +67,10 @@ function App() {
         {Array.isArray(results) && (
           <div>
             {
-              results.map(result => (
-                <ResultPanel>
+              results.map((result, index) => (
+                <ResultPanel key={index}>
                   <div>{result.text}</div>
-                  <SourceLink href={`/api/files/${result.file_path}`} target='_blank'>{result.file_path}</SourceLink>
+                  <SourceLink href={result.file_path} target='_blank'>{getFileName(result.file_path)}</SourceLink>
                 </ResultPanel>
               ))
             }

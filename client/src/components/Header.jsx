@@ -19,6 +19,7 @@ const HeaderPanel = styled.header`
   .logo-text {
     vertical-align: top;
     margin-left: 5px;
+    color: #008080;
   }
 
   .icon-panel {
@@ -40,7 +41,7 @@ function Header(configs) {
     <HeaderPanel>
       <img src="favicon.ico" width="20" alt="logo" />
       <span className="logo-text">
-        Vector Search
+        <b>Vector</b> Search
       </span>
       <div className="icon-panel">
         <IconButton size="small" onClick={event => setSettingsElm(event.currentTarget)}>
