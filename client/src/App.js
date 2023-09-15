@@ -24,6 +24,12 @@ const PlaceholderResults = styled(Skeleton)`
   margin-top: 20px;
 `;
 
+const MetaDataPanel = styled.div`
+  margin-top: 20px;
+  text-align: right;
+  color: #777;
+`;
+
 const SourceLink = styled.a`
   font-size: 0.8em;
 
@@ -53,9 +59,21 @@ function App() {
     }
   }, []);
 
-  const isLoading = results === LOADING;
+  const Footer = styled.div`
+    position: fixed;
+    bottom: 0;
+    left: 0px;
+    right: 0px;
+    height: 20px;
+    padding: 5px 20px;
 
-  console.log(results)
+    text-align: right;
+    background-color: #DDD;
+    font-size: 0.9em;
+    color: #444;
+  `;
+
+  const isLoading = results === LOADING;
 
   return (
     <div className="App">
@@ -65,18 +83,22 @@ function App() {
         {isLoading && <PlaceholderResults variant="rounded" height={100} />}
 
         {Array.isArray(results) && (
-          <div>
-            {
-              results.map((result, index) => (
-                <ResultPanel key={index}>
-                  <div>{result.text}</div>
-                  <SourceLink href={result.file_path} target='_blank'>{getFileName(result.file_path)}</SourceLink>
-                </ResultPanel>
-              ))
-            }
-          </div>
+          <>
+            <MetaDataPanel>{results.length} matching results</MetaDataPanel>
+            <div>
+              {
+                results.map((result, index) => (
+                  <ResultPanel key={index}>
+                    <div>{result.text}</div>
+                    <SourceLink href={result.file_path} target='_blank'>{getFileName(result.file_path)}</SourceLink>
+                  </ResultPanel>
+                ))
+              }
+            </div>
+          </>
         )}
       </MainPanel>
+      <Footer>By <b>AI</b>Alchemists</Footer>
     </div>
   );
 }
