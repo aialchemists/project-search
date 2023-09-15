@@ -1,10 +1,10 @@
-# Need to integrate with remaining code, pass user_query
-
 from elasticsearch import Elasticsearch
+from typing import List
 
-def create_inverted_index(text):
+es = Elasticsearch([{'host': 'localhost', 'port': 9200, 'scheme': 'http'}])
+
+def create_inverted_index(chunks, chunk_ids) -> List[float]:
     # Initialize an Elasticsearch client
-    es = Elasticsearch([{'host': 'localhost', 'port': 9200, 'scheme': 'http'}])
 
     # Creating mapping
     mappings = {
@@ -20,15 +20,18 @@ def create_inverted_index(text):
     es.indices.create(index="chunks", mappings=mappings)
 
     # Index the chunks
-    for chunk in text:
+    for idx, chunk in enumerate(chunks):
         doc = {
-            "chunk_text": chunk["text"]
+            "chunk_text": chunk
         }
-        es.index(index="chunks", id=chunk["chunk_id"], document=doc)
+        es.index(index="chunks", id=chunk_ids[idx], document=doc)
 
-    return es
+    # Print chunks to see format
+    # print(es.indices.get(index="*"))
 
-def search_chunks(es, user_query):
+    es.indices.refresh(index="chunks")
+
+def search_chunks(user_query):
     # Define search query
     search_query = {
         "match": {
@@ -38,8 +41,6 @@ def search_chunks(es, user_query):
             }
         }
     }
-
-    es.indices.refresh(index="chunks")
 
     # Execute the search
     results = es.search(index="chunks", query=search_query)
@@ -54,18 +55,6 @@ def search_chunks(es, user_query):
             "source": source
         })
 
-    return search_results
+    print(search_results)
 
-# Example usage:
-# chunks_to_create = [
-#     {'chunk_id': 1, 'text': 'Popcorn kernels are popping in the oven. I always enjoy popcorn while watching a movie.'},
-#     {'chunk_id': 2, 'text': 'There was a class on Machine Learning at SupportVectors.'},
-#     {'chunk_id': 3, 'text': 'I went to Ross and Walmart after work today. I got milk and a jacket.'},
-# ]
-#
-# es = create_inverted_index(chunks_to_create)
-#
-# user_query = "Movie"
-# results = search_chunks(es, user_query)
-# for result in results:
-#     print(f"Document ID: {result['document_id']}, Score: {result['score']}, Source: {result['source']}")
+    return search_results
