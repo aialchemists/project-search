@@ -51,3 +51,15 @@ npm start
 
 UI must be available at http://localhost:3000
 ```
+
+### 7. ElasticSearch
+Docker command to setup the server
+
+```
+ run --rm --detach -p 9200:9200 -p 9300:9300 -e "xpack.security.enabled=false" -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:8.7.0
+```
+
+Pip install Elastic Search
+```
+pip install elasticsearch
+```
