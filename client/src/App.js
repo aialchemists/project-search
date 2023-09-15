@@ -1,23 +1,16 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from "styled-components";
-
-import Header from './components/Header'
+import { Skeleton } from '@mui/material';
 
 import { getConfigs } from './apis/configs';
 import { search } from './apis/search';
 
+import Header from './components/Header'
 import SearchBox from './components/SearchBox';
-import { Skeleton } from '@mui/material';
+import ResultPanel from './components/ResultPanel';
 
 const MainPanel = styled.section`
   padding: 40px 20px;
-`;
-
-const ResultPanel = styled.div`
-  background-color: #DDDD;
-  border-radius: 5px;
-  margin: 20px 0;
-  padding: 10px;
 `;
 
 const PlaceholderResults = styled(Skeleton)`
@@ -30,20 +23,7 @@ const MetaDataPanel = styled.div`
   color: #777;
 `;
 
-const SourceLink = styled.a`
-  font-size: 0.8em;
-
-  display: inline-block;
-  margin-top: 5px;
-  color: #008080;
-`;
-
 const LOADING = Symbol();
-
-function getFileName(path) {
-  const parts = path.split("/");
-  return parts[parts.length - 1];
-}
 
 function App() {
   const [configs, setConfigs] = useState(null);
@@ -86,14 +66,9 @@ function App() {
           <>
             <MetaDataPanel>{results.length} matching results</MetaDataPanel>
             <div>
-              {
-                results.map((result, index) => (
-                  <ResultPanel key={index}>
-                    <div>{result.text}</div>
-                    <SourceLink href={result.file_path} target='_blank'>{getFileName(result.file_path)}</SourceLink>
-                  </ResultPanel>
-                ))
-              }
+              {results.map((result, index) => (
+                <ResultPanel key={index} result={result} />
+              ))}
             </div>
           </>
         )}
