@@ -25,13 +25,20 @@ python db_migrate.py
 Copy files into ./data directory
 ```
 
-### 4. Run extract pipeline
+### 4. ElasticSearch
+Docker command to setup the server
+
+```
+ run --rm --detach -p 9200:9200 -p 9300:9300 -e "xpack.security.enabled=false" -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:8.7.0
+```
+
+### 5. Run extract pipeline
 ```
 python extract_pipeline.py
 ```
 After a successful run, data would be available in the database.
 
-### 5. Run UTs
+### 6. Run UTs
 ```
 nosetests --nocapture
 
@@ -39,12 +46,12 @@ nosetests --nocapture
 nosetests --nocapture core/test_chunk.py:test_chunkify
 ```
 
-### 6. Start Server
+### 7. Start Server
 ```
 uvicorn server:app --reload
 ```
 
-### 6. Start Client
+### 8. Start Client
 ```
 cd client
 npm start
@@ -52,14 +59,3 @@ npm start
 UI must be available at http://localhost:3000
 ```
 
-### 7. ElasticSearch
-Docker command to setup the server
-
-```
- run --rm --detach -p 9200:9200 -p 9300:9300 -e "xpack.security.enabled=false" -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:8.7.0
-```
-
-Pip install Elastic Search
-```
-pip install elasticsearch
-```
