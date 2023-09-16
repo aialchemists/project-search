@@ -3,22 +3,20 @@ from typing import List
 
 es = Elasticsearch([{'host': 'localhost', 'port': 9200, 'scheme': 'http'}])
 
-def create_inverted_index(chunks, chunk_ids) -> List[float]:
-    # Initialize an Elasticsearch client
+def migrate():
+    # Deleting indexes (if exists)
+    if es.indices.exists(index='chunks'):
+        es.indices.delete(index='chunks')
 
-    # Creating mapping
     mappings = {
         "properties": {
             "chunk_text": {"type": "text", "analyzer": "standard"}
         }
     }
-
-    # Deleting indexes (if exists)
-    if es.indices.exists(index='chunks'):
-        es.indices.delete(index='chunks')
-
+    # Creating chunks indices
     es.indices.create(index="chunks", mappings=mappings)
 
+def save(chunks, chunk_ids) -> List[float]:
     # Index the chunks
     for idx, chunk in enumerate(chunks):
         doc = {
@@ -26,24 +24,29 @@ def create_inverted_index(chunks, chunk_ids) -> List[float]:
         }
         es.index(index="chunks", id=chunk_ids[idx], document=doc)
 
-    # Print chunks to see format
-    # print(es.indices.get(index="*"))
-
     es.indices.refresh(index="chunks")
 
-def search_chunks(user_query):
+def search(user_query, top_k):
     # Define search query
     search_query = {
-        "match": {
-            "chunk_text": {
-                "query": user_query,
-                "fuzziness": "AUTO"
+        "query": {
+            "match": {
+                "chunk_text": {
+                    "query": user_query,
+                    "fuzziness": "AUTO"
+                }
             }
-        }
+        },
+        "size": top_k,  # Limit the number of results returned to top_k
+        "sort": [
+            {
+                "_score": {"order": "desc"}  # Sort by relevance score in descending order
+            }
+        ]
     }
 
     # Execute the search
-    results = es.search(index="chunks", query=search_query)
+    results = es.search(index="chunks", query = "search_query")
 
     # Process and return the search results
     search_results = []
@@ -54,7 +57,5 @@ def search_chunks(user_query):
             "score": hit['_score'],
             "source": source
         })
-
-    print(search_results)
-
     return search_results
+
