@@ -8,19 +8,21 @@ import { search } from './apis/search';
 import Header from './components/Header'
 import SearchBox from './components/SearchBox';
 import ResultPanel from './components/ResultPanel';
+import MetaDataPanel from './components/MetaDataPanel';
 
 const MainPanel = styled.section`
   padding: 40px 20px;
+
+  .quote-text {
+    margin-top: 40px;
+    text-align: center;
+    font-size: 0.8em;
+    font-style: italic;
+  }
 `;
 
 const PlaceholderResults = styled(Skeleton)`
   margin-top: 20px;
-`;
-
-const MetaDataPanel = styled.div`
-  margin-top: 20px;
-  text-align: right;
-  color: #777;
 `;
 
 const LOADING = Symbol();
@@ -31,7 +33,9 @@ function App() {
     getConfigs(setConfigs)
   }, []);
 
-  const [results, setResults] = useState(null);
+  const [filters, setFilters] = useState({});
+
+  const [searchResp, setResults] = useState(null);
   const onSearch = useCallback(async (query) => {
     if(query) {
       setResults(LOADING);
@@ -51,9 +55,13 @@ function App() {
     background-color: #DDD;
     font-size: 0.9em;
     color: #444;
+
+    span {
+      color: #008080;
+    }
   `;
 
-  const isLoading = results === LOADING;
+  const isLoading = searchResp === LOADING;
 
   return (
     <div className="App">
@@ -62,18 +70,22 @@ function App() {
         <SearchBox onSearch={onSearch} isLoading={isLoading} />
         {isLoading && <PlaceholderResults variant="rounded" height={100} />}
 
-        {Array.isArray(results) && (
+        {Array.isArray(searchResp && searchResp.results) ? (
           <>
-            <MetaDataPanel>{results.length} matching results</MetaDataPanel>
+            <MetaDataPanel searchResp={searchResp} filters={filters} onFiltersChange={setFilters}/>
             <div>
-              {results.map((result, index) => (
+              {searchResp.results.map((result, index) => (
                 <ResultPanel key={index} result={result} />
               ))}
             </div>
           </>
+        ) : (
+          <div className='quote-text'>
+            At its most basic level semantic search applies meaning to the connections between the data in ways that allow a clearer understanding of them than we have ever had to date ― David Amerland
+          </div>
         )}
       </MainPanel>
-      <Footer>By <b>AI</b>Alchemists</Footer>
+      <Footer>By <span><b>AI</b>Alchemists</span></Footer>
     </div>
   );
 }
