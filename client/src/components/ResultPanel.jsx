@@ -25,6 +25,16 @@ const SourceLink = styled.a`
   color: #008080;
 `;
 
+const MAX_TEXT_LENGTH = 500;
+
+// TODO: Do this using pure CSS
+function getChunkText(text) {
+  if(text.length > MAX_TEXT_LENGTH) {
+    text = text.slice(0, MAX_TEXT_LENGTH) + "...";
+  }
+  return text;
+}
+
 function getFileName(path) {
   const parts = path.split("/");
   return parts[parts.length - 1];
@@ -33,9 +43,9 @@ function getFileName(path) {
 function ResultPanel({result}) {
   return (
     <Container>
-      <div>{result.text}</div>
+      <div className="chunk-text">{getChunkText(result.text)}</div>
       <SourceLink href={result.file_path} target='_blank'>{getFileName(result.file_path)}</SourceLink>
-      <div className="score-value">{result.score}</div>
+      <div className="score-value">{parseFloat(result.score).toFixed(2)}</div>
     </Container>
   );
 }
