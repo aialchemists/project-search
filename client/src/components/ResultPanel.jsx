@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 const Container = styled.div`
   position: relative;
-  background-color: #DDDD;
+  background-color: #DDD7;
   border-radius: 5px;
   margin: 20px 0;
   padding: 10px;
