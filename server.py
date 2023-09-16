@@ -3,6 +3,9 @@ import time
 from fastapi import FastAPI
 from starlette.responses import RedirectResponse
 
+import core.elastic_search as elastic_search
+from core.cross_encoder import rerank_query_chunk_pair
+
 from utils.configs import configs
 
 app = FastAPI(title="Vector Search - APIs")
@@ -36,6 +39,20 @@ async def configs_api():
 
 @app.get("/api/search")
 async def search_api(query):
+    top_k = 10
+    search_results = elastic_search.search(query, top_k)
+
+    chunks = ["I went to Outback today.", "The handyman came in today to fix the TV", "The TV was on for 5 hours straight."]
+    top_pairs = rerank_query_chunk_pair(query, chunks, top_k)
+
+    results = []
+    for pair in top_pairs:
+        results.append({
+            "text": pair[0][1],
+            "file_path": "./path/to/file",
+            "score": pair[1].item()
+        })
+
     return {
       "results": results
     }

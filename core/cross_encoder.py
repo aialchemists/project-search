@@ -2,7 +2,7 @@
 
 from sentence_transformers import CrossEncoder
 
-def rerank_query_chunk_pair(user_query, chunks, top_n):
+def rerank_query_chunk_pair(user_query, chunks, top_k):
     ce_model = CrossEncoder('cross-encoder/stsb-roberta-large')
 
     sentence_pairs = [[user_query, chunk] for chunk in chunks]
@@ -17,6 +17,6 @@ def rerank_query_chunk_pair(user_query, chunks, top_n):
     sorted_pairs = sorted(combined_scores, key=lambda x: x[1], reverse=True)
 
     # Return the top N pairs and their similarity scores
-    top_pairs = sorted_pairs[:top_n]
+    top_pairs = sorted_pairs[:top_k]
 
     return top_pairs

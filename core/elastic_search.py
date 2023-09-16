@@ -29,24 +29,16 @@ def save(chunks, chunk_ids) -> List[float]:
 def search(user_query, top_k):
     # Define search query
     search_query = {
-        "query": {
-            "match": {
-                "chunk_text": {
-                    "query": user_query,
-                    "fuzziness": "AUTO"
-                }
+        "match": {
+            "chunk_text": {
+                "query": user_query,
+                "fuzziness": "AUTO"
             }
-        },
-        "size": top_k,  # Limit the number of results returned to top_k
-        "sort": [
-            {
-                "_score": {"order": "desc"}  # Sort by relevance score in descending order
-            }
-        ]
+        }
     }
 
     # Execute the search
-    results = es.search(index="chunks", query = "search_query")
+    results = es.search(index="chunks", query=search_query, sort=["_score:desc"], size= top_k)
 
     # Process and return the search results
     search_results = []
