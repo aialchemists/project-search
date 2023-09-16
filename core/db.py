@@ -2,8 +2,11 @@
 
 from pathlib import Path
 import os
+from dataclasses import dataclass
 
 import psycopg2
+from psycopg2.extras import RealDictCursor
+
 import json
 from typing import List
 
@@ -38,6 +41,15 @@ def save_file(data: FileData) -> int:
         else:
           raise Exception("Insert into file table failed")
 
+@dataclass
+class Chunk:
+   chunk_id: int
+   file_id: int
+   chunk_text: str
+   embedding: List[float]
+   start_position: int
+   length: int
+
 def save_chunk(file_id: int, chunk_text: str, embedding: List[float], start_position: int):
     chunk_length = len(chunk_text)
     with conn.cursor() as cursor:
@@ -52,6 +64,13 @@ def save_chunk(file_id: int, chunk_text: str, embedding: List[float], start_posi
           return inserted_row[0]
         else:
           raise Exception("Insert into chunk table failed")
+
+def read_chunks(chunk_ids: List[str]) -> List[Chunk]:
+    ids = tuple(chunk_ids)
+    with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+        cursor.execute("SELECT * FROM chunk WHERE chunk_id IN %s", (ids,))
+        rows = cursor.fetchall()
+        return list(map(lambda r: Chunk(**r), rows))
 
 def close():
     conn.close()

@@ -5,6 +5,7 @@ from starlette.responses import RedirectResponse
 
 import core.elastic_search as elastic_search
 from core.cross_encoder import rerank_query_chunk_pair
+import core.db as db
 
 from utils.configs import configs
 
@@ -42,8 +43,11 @@ async def search_api(query):
     top_k = 10
     search_results = elastic_search.search(query, top_k)
 
-    chunks = ["I went to Outback today.", "The handyman came in today to fix the TV", "The TV was on for 5 hours straight."]
-    top_pairs = rerank_query_chunk_pair(query, chunks, top_k)
+    chunk_ids = list(map(lambda r: r["document_id"], search_results))
+    chunks = db.read_chunks(chunk_ids)
+    chunk_texts = list(map(lambda c: c.chunk_text, chunks))
+
+    top_pairs = rerank_query_chunk_pair(query, chunk_texts, top_k)
 
     results = []
     for pair in top_pairs:
@@ -54,7 +58,8 @@ async def search_api(query):
         })
 
     return {
-      "results": results
+      "results": results,
+      "facets": []
     }
 
 @app.get("/files/{file_path}")
