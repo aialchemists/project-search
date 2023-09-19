@@ -1,5 +1,5 @@
 from utils.logger import log, print_line
-import utils.db as db
+from utils import db
 
 try:
   db.init()

@@ -17,7 +17,7 @@ docker run -p 5431:5432 --name vs-postgres -e POSTGRES_PASSWORD=mysecretpassword
 ```
 2.b To create tables and setup the database
 ```
-python db_migrate.py
+python -m services.migrate
 ```
 
 ### 3. Load documents
