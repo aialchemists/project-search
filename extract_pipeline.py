@@ -4,7 +4,7 @@ from core.parse import parse_file
 from core.chunk import chunkify
 from core.embedding import embed_text
 import core.elastic_search as elastic_search
-import core.db as db
+import utils.db as db
 
 def process_local_file(file_path):
     # Step 1: Parse

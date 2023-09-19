@@ -11,7 +11,7 @@ from psycopg2.extras import RealDictCursor
 import json
 from typing import List
 
-from .file_data import FileData
+from core.file_data import FileData
 from utils.configs import db_configs
 
 try:
@@ -24,7 +24,7 @@ except Exception as exc:
   raise exc
 
 def migrate():
-    schema = Path(os.getcwd()).joinpath('core/db_schema.sql').read_text()
+    schema = Path(os.getcwd()).joinpath('utils/db_schema.sql').read_text()
     with conn.cursor() as cursor:
         cursor.execute(schema)
         conn.commit()

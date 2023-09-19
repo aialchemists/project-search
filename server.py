@@ -5,7 +5,7 @@ from starlette.responses import RedirectResponse
 
 import core.elastic_search as elastic_search
 from core.cross_encoder import rerank_query_chunk_pair
-import core.db as db
+import utils.db as db
 
 from utils.configs import configs
 
