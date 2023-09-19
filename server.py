@@ -53,7 +53,7 @@ async def search_api(query):
     for pair in top_pairs:
         results.append({
             "text": pair[0][1],
-            "file_path": "./path/to/file",
+            "file_path": "./path/to/TestFile.pdf",
             "score": pair[1].item()
         })
 
