@@ -12,3 +12,8 @@ def test_chunkify_lessthan_60char():
     text = "Independence Day (also promoted as ID4)."
     chunks = chunkify(text)
     assert_not_equal(len(list(chunks)), 0)
+
+def test_chunkify_grouping():
+    text = "The cow jumped over the moon. the moon has no air and no animals roaming. shark is a fish. go fish! Water water every where but not a drop to drink. The water molicules has two hydrogen and one oxygen atom. Atoms have electrons orbitting a nucleus"
+    chunks = chunkify(text)
+    assert_equals(len(list(chunks)), 6)
