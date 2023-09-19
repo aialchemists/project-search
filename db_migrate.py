@@ -1,12 +1,16 @@
-from utils.configs import db_configs
-from utils.commons import print_line
+from utils.logger import log, print_line
 import utils.db as db
 
-print("Starting database migration - Connection details :" + db_configs.get_dsn())
+try:
+  db.init()
+except Exception as exc:
+  log.error("Exception while initialising DB migrate service", exc)
+
+log.info("Starting database migration")
 print_line()
 
 schema = db.migrate()
-print(f"Schema: {schema}")
+print(f"Schema:\n{schema}")
 
 print_line()
-print("DB migration complete!")
+log.info("DB migration complete!")

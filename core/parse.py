@@ -1,10 +1,8 @@
-import os
+from utils.logger import log
+
 from tika import parser
 
 from .file_data import FileData
-
-import warnings
-warnings.filterwarnings('ignore')
 
 def parse_file(file_path) -> FileData:
     try:
@@ -17,9 +15,9 @@ def parse_file(file_path) -> FileData:
             content = content.strip()
         else:
             content = ''
-            print(f"Content not available for file {file_path}")
+            log.info(f"Content not available for file {file_path}")
 
         return FileData(file_path=file_path, content=content, metadata=metadata)
     except Exception as e:
-        print(f"An error occurred while parsing '{file_path}': {e}")
+        log.error(f"An error occurred while parsing '{file_path}': {e}")
         raise e

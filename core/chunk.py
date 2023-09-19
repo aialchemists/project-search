@@ -1,12 +1,21 @@
-from typing import List
-from utils.configs import chunk_configs
+from utils.logger import log
 
 import numpy as np
 import spacy
 import math
 
-# Load the Spacy model
-nlp = spacy.load('en_core_web_lg')
+from typing import List, Callable
+from utils.configs import chunk_configs
+
+_MODEL_NAME = 'en_core_web_lg'
+
+nlp: Callable
+
+def init():
+    log.info(f"Loading Spacy model {_MODEL_NAME}")
+    global nlp
+    nlp = spacy.load(_MODEL_NAME)
+    log.info('Spacy model loaded')
 
 def get_sentences(text):
     doc = nlp(text)

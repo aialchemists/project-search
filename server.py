@@ -1,15 +1,22 @@
-import time
+from utils.logger import log
 
 from fastapi import FastAPI
 from starlette.responses import RedirectResponse
 
 import core.elastic_search as elastic_search
-from core.cross_encoder import rerank_query_chunk_pair
+import core.cross_encoder as cross_encoder
 import utils.db as db
 
 from utils.configs import configs
 
 app = FastAPI(title="Vector Search - APIs")
+
+try:
+  db.init()
+  cross_encoder.init()
+  elastic_search.init()
+except Exception as exc:
+  log.error("Exception while initialising extract pipeline", exc)
 
 results = [
   {
@@ -47,7 +54,7 @@ async def search_api(query):
     chunks = db.read_chunks(chunk_ids)
     chunk_texts = list(map(lambda c: c.chunk_text, chunks))
 
-    top_pairs = rerank_query_chunk_pair(query, chunk_texts, top_k)
+    top_pairs = cross_encoder.rank(query, chunk_texts, top_k)
 
     results = []
     for pair in top_pairs:

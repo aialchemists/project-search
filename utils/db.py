@@ -1,12 +1,13 @@
-# pip install psycopg2-binary
+from utils.logger import log
 
-from pathlib import Path
 import os
+from pathlib import Path
 from dataclasses import dataclass
-import logging as log
 
-import psycopg2
+# TODO: Use SQLmodel instead of Psycopg2
+from psycopg2 import connect
 from psycopg2.extras import RealDictCursor
+from psycopg2.extensions import connection
 
 import json
 from typing import List
@@ -14,14 +15,13 @@ from typing import List
 from core.file_data import FileData
 from utils.configs import db_configs
 
-try:
-  log.info("Connecting to the database")
-  conn = psycopg2.connect(db_configs.get_dsn())
-except Exception as exc:
-  print(exc)
-  log.error(exc)
-  print("I am unable to connect to the database")
-  raise exc
+conn: connection
+
+def init():
+    log.info("Establishing database connection")
+    global conn
+    conn = connect(db_configs.get_dsn())
+    log.info('Database connection established')
 
 def migrate():
     schema = Path(os.getcwd()).joinpath('utils/db_schema.sql').read_text()
@@ -39,7 +39,7 @@ def save_file(data: FileData) -> int:
 
         inserted_row = cursor.fetchone()
         if inserted_row:
-          print(f"Saved details of file {data.file_path}")
+          log.info(f"Saved details of file {data.file_path}")
           return inserted_row[0]
         else:
           raise Exception("Insert into file table failed")
@@ -63,7 +63,7 @@ def save_chunk(file_id: int, chunk_text: str, embedding: List[float], start_posi
 
         inserted_row = cursor.fetchone()
         if inserted_row:
-          print(f"Saved chunk of file id {file_id} from position {start_position}")
+          log.info(f"Saved chunk of file id {file_id} from position {start_position}")
           return inserted_row[0]
         else:
           raise Exception("Insert into chunk table failed")

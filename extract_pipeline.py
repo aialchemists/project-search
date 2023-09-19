@@ -1,22 +1,31 @@
+from utils.logger import log
 import os
 
-from core.parse import parse_file
-from core.chunk import chunkify
-from core.embedding import embed_text
-import core.elastic_search as elastic_search
 import utils.db as db
+import core.parse as parse
+import core.chunk as chunk
+import core.embed as embed
+import core.elastic_search as elastic_search
+
+try:
+  db.init()
+  chunk.init()
+  embed.init()
+  elastic_search.init()
+except Exception as exc:
+  log.error("Exception while initialising extract pipeline", exc)
 
 def process_local_file(file_path):
     # Step 1: Parse
-    file_data = parse_file(file_path)
+    file_data = parse.parse_file(file_path)
     file_id = db.save_file(file_data)
 
     # Step 2: Chunking
     chunk_ids = []
-    chunks = chunkify(file_data.content)
+    chunks = chunk.chunkify(file_data.content)
     start_position = 0
     for chunk_text in chunks:
-        embedding = embed_text(chunk_text)
+        embedding = embed.embed_text(chunk_text)
         chunk_id = db.save_chunk(file_id, chunk_text, embedding, start_position)
         chunk_ids.append(chunk_id)
         start_position += len(chunk_text)
@@ -31,6 +40,6 @@ def process_local_dir(directory_path):
             if not os.path.basename(path).startswith("."):
                 process_local_file(path)
     else:
-        print(f"'{directory_path}' is not a valid directory path.")
+        log.error(f"'{directory_path}' is not a valid directory path.")
 
 process_local_dir("./data/")

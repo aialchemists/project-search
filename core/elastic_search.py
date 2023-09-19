@@ -1,7 +1,15 @@
+from utils.logger import log
+
 from elasticsearch import Elasticsearch
 from typing import List
 
-es = Elasticsearch([{'host': 'localhost', 'port': 9200, 'scheme': 'http'}])
+es: Elasticsearch
+
+def init():
+    log.info(f"Initialising Elasticsearch")
+    global es
+    es = Elasticsearch([{'host': 'localhost', 'port': 9200, 'scheme': 'http'}])
+    log.info('Elasticsearch initialised')
 
 def migrate():
     # Deleting indexes (if exists)
