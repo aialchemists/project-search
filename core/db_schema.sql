@@ -2,13 +2,11 @@
 file - Each row is a file that we have extracted
   - file_id       - Primary-key, Auto incrementing
   - file_path     - Stores the path to the file
-  - metadata      - Metadata of the file in JSON format
 */
 create table file (
   file_id SERIAL UNIQUE,
   file_path TEXT,
   content TEXT,
-  metadata JSONB,
 
   CONSTRAINT unique_file_path UNIQUE (file_path)
 );
