@@ -25,12 +25,12 @@ def process_local_file(file_path):
     elastic_search.save(chunks, chunk_ids)
 
 def process_local_dir(directory_path):
-    if not os.path.exists(directory_path):
+    if os.path.isdir(directory_path):
+        file_paths = [os.path.join(directory_path, filename) for filename in os.listdir(directory_path) if os.path.isfile(os.path.join(directory_path, filename))]
+        for path in file_paths:
+            if not os.path.basename(path).startswith("."):
+                process_local_file(path)
+    else:
         print(f"'{directory_path}' is not a valid directory path.")
-
-    file_paths = [os.path.join(directory_path, filename) for filename in os.listdir(directory_path) if os.path.isfile(os.path.join(directory_path, filename))]
-    for path in file_paths:
-        if not os.path.basename(path).startswith("."):
-            process_local_file(path)
 
 process_local_dir("./data/")
