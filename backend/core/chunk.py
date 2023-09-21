@@ -18,7 +18,9 @@ def init():
     log.info('Spacy model loaded')
 
 def get_sentences(text):
-    doc = nlp(text)
+    # Remove \n, \t, and + characters from the text
+    cleaned_text = text.replace('\n', ' ').replace('\t', ' ').replace('+', ' ')
+    doc = nlp(cleaned_text)
     sents = list(doc.sents)
     vecs = np.stack([sent.vector / sent.vector_norm for sent in sents])
 
