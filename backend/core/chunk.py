@@ -18,9 +18,7 @@ def init():
     log.info('Spacy model loaded')
 
 def get_sentences(text):
-    # Remove \n, \t, and + characters from the text
-    cleaned_text = text.replace('\n', ' ').replace('\t', ' ').replace('+', ' ')
-    doc = nlp(cleaned_text)
+    doc = nlp(text)
     sents = list(doc.sents)
     vecs = np.stack([sent.vector / sent.vector_norm for sent in sents])
 
@@ -54,6 +52,19 @@ def get_sentence_clusters(text, degree) -> List[str]:
 
     return sentence_clusters
 
+def divide_larger_chunks(text, piece_length):
+    # Initialize an empty list to store the divided pieces
+    divided_pieces = []
+
+    # Loop through the input_string in steps of piece_length
+    for i in range(0, len(text), piece_length):
+        # Extract a piece of the specified length
+        piece = text[i:i + piece_length]
+        divided_pieces.append(piece)
+
+    return divided_pieces
+
+
 def chunkify(text, degree: float = chunk_configs.degree, recursion_level = 1) -> List[str]:
     # Initialize the clusters lengths list and final texts list
     chunks = []
@@ -67,39 +78,12 @@ def chunkify(text, degree: float = chunk_configs.degree, recursion_level = 1) ->
         else:
             chunks.append(sentence_cluster)
 
-    # After all chunks have been added, check and split any chunks that exceed max_length
     final_chunks = []
     for chunk in chunks:
         if len(chunk) > chunk_configs.max_length:
-            mid = len(chunk) // 2
-            break_at = min(
-                chunk.rfind('\n', 0, mid),
-                chunk.find('\n', mid),
-                key=lambda i: abs(mid - i)  # pick closest to middle
-            )
-            if break_at > 0:
-                firstpart = chunk[:break_at]
-                secondpart = chunk[break_at:]
-            else:
-                firstpart = chunk
-                secondpart = ''
-            final_chunks.append(firstpart)
-            final_chunks.append(secondpart)
+            divided_chunks = divide_larger_chunks(chunk, chunk_configs.max_length)
+            final_chunks.extend(divided_chunks)  # Append the divided chunks to the final_chunks list
         else:
             final_chunks.append(chunk)
 
     return final_chunks
-
-
-    # Splitting big chunks midway
-    # final_chunks = []
-    # for chunk in chunks:
-    #     if len(chunk) > chunk_configs.max_length:
-    #         # Find the midpoint of the chunk and split it in the middle
-    #         midpoint = len(chunk) // 2
-    #         final_chunks.append(chunk[:midpoint])
-    #         final_chunks.append(chunk[midpoint:])
-    #     else:
-    #         final_chunks.append(chunk)
-    #
-    # return final_chunks
