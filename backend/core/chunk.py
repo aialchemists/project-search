@@ -65,4 +65,39 @@ def chunkify(text, degree: float = chunk_configs.degree, recursion_level = 1) ->
         else:
             chunks.append(sentence_cluster)
 
-    return chunks
+    # After all chunks have been added, check and split any chunks that exceed max_length
+    final_chunks = []
+    for chunk in chunks:
+        if len(chunk) > chunk_configs.max_length:
+            mid = len(chunk) // 2
+            break_at = min(
+                chunk.rfind('\n', 0, mid),
+                chunk.find('\n', mid),
+                key=lambda i: abs(mid - i)  # pick closest to middle
+            )
+            if break_at > 0:
+                firstpart = chunk[:break_at]
+                secondpart = chunk[break_at:]
+            else:
+                firstpart = chunk
+                secondpart = ''
+            final_chunks.append(firstpart)
+            final_chunks.append(secondpart)
+        else:
+            final_chunks.append(chunk)
+
+    return final_chunks
+
+
+    # Splitting big chunks midway
+    # final_chunks = []
+    # for chunk in chunks:
+    #     if len(chunk) > chunk_configs.max_length:
+    #         # Find the midpoint of the chunk and split it in the middle
+    #         midpoint = len(chunk) // 2
+    #         final_chunks.append(chunk[:midpoint])
+    #         final_chunks.append(chunk[midpoint:])
+    #     else:
+    #         final_chunks.append(chunk)
+    #
+    # return final_chunks
