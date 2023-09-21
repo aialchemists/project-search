@@ -1,5 +1,8 @@
 # Vector Search
 
+## Backend
+All the following commands must be run inside `./backend`
+
 ### 1. Create a virtual environment and install pip dependencies
 Ensure you have python 3.9.16
 ```
@@ -51,11 +54,12 @@ nosetests --nocapture core/test_chunk.py:test_chunkify
 uvicorn server:app --reload
 ```
 
-### 8. Start Client
+## Frontend
+All the following commands must be run inside `./frontend`
+
+### 1. Start UI
 ```
-cd client
 npm start
 
 UI must be available at http://localhost:3000
 ```
-
