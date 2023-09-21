@@ -51,7 +51,7 @@ nosetests --nocapture core/test_chunk.py:test_chunkify
 
 ### 7. Start Server
 ```
-uvicorn server:app --reload
+uvicorn services.server:app --reload
 ```
 
 ## Frontend
