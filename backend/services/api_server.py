@@ -3,7 +3,7 @@ from utils.logger import log
 from fastapi import FastAPI
 from starlette.responses import RedirectResponse
 
-import core.elastic_search as elastic_search
+import apis.elastic_search as elastic_search
 import core.cross_encoder as cross_encoder
 import utils.db as db
 import apis.rerank as rerank_api

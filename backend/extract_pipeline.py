@@ -5,7 +5,7 @@ import utils.db as db
 import core.parse as parse
 import core.chunk as chunk
 import core.embed as embed
-import core.elastic_search as elastic_search
+import apis.elastic_search as elastic_search
 
 try:
   db.init()
