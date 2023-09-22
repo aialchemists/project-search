@@ -2,7 +2,7 @@ from utils.logger import log
 
 from tika import parser
 
-from .file_data import FileData
+from custom_types.data import FileData
 
 def parse_file(file_path) -> FileData:
     try:

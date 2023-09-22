@@ -12,7 +12,7 @@ from psycopg2.extensions import connection
 import json
 from typing import List, Union
 
-from core.file_data import FileData
+from custom_types.data import FileData, Chunk
 from utils.configs import db_configs
 
 conn: connection
@@ -50,14 +50,6 @@ def read_file(file_id: int) -> Union[FileData, None]:
         cursor.execute("SELECT * FROM file WHERE file_id = %s", (file_id,))
         row = cursor.fetchone()
         return FileData(**row) if row else None
-
-@dataclass
-class Chunk:
-   chunk_id: int
-   file_id: int
-   chunk_text: str
-   start_position: int
-   length: int
 
 def save_chunk(file_id: int, chunk_text: str, start_position: int):
     chunk_length = len(chunk_text)
