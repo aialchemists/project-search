@@ -27,8 +27,7 @@ def chunk_task(file_id):
         chunks = chunk.chunkify(file_data.content)
         start_position = 0
         for chunk_text in chunks:
-            embedding = []
-            chunk_id = db.save_chunk(file_id, chunk_text, embedding, start_position)
+            chunk_id = db.save_chunk(file_id, chunk_text, start_position)
             chunk_ids.append(chunk_id)
             start_position += len(chunk_text)
 

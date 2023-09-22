@@ -34,14 +34,12 @@ chunk - Each row is a chunk of text from the file. A file can be split into mult
   - chunk_id       - Primary-key, Auto incrementing
   - file_id        - Foreign-key
   - chunk_text     - Part of the file represented by current chunk
-  - embedding      - Embedding of the chunk_text (Need to investigate usage of pgvector: https://github.com/pgvector/pgvector)
   - start_position - Starting character position of the chunk in the file
 */
 create table chunk (
   chunk_id SERIAL UNIQUE,
   file_id INTEGER,
   chunk_text TEXT,
-  embedding float ARRAY,
   start_position INTEGER,
   length INTEGER,
 

@@ -56,14 +56,13 @@ class Chunk:
    chunk_id: int
    file_id: int
    chunk_text: str
-   embedding: List[float]
    start_position: int
    length: int
 
-def save_chunk(file_id: int, chunk_text: str, embedding: List[float], start_position: int):
+def save_chunk(file_id: int, chunk_text: str, start_position: int):
     chunk_length = len(chunk_text)
     with conn.cursor() as cursor:
-        cursor.execute("INSERT INTO chunk (file_id, chunk_text, embedding, start_position, length) VALUES (%s,%s,%s,%s,%s) RETURNING *", (file_id, chunk_text, embedding, start_position, chunk_length))
+        cursor.execute("INSERT INTO chunk (file_id, chunk_text, start_position, length) VALUES (%s,%s,%s,%s) RETURNING *", (file_id, chunk_text, start_position, chunk_length))
         conn.commit()
 
         inserted_row = cursor.fetchone()
