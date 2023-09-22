@@ -34,7 +34,7 @@ async def search_api(query):
     search_results = elastic_search.search(query, top_k)
 
     chunk_ids = list(map(lambda r: r["document_id"], search_results))
-    results = rerank_api.rerank_chunks(query, chunk_ids)
+    results = await rerank_api.rerank_chunks(query, chunk_ids)
 
     return {
       "results": results,
