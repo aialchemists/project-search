@@ -11,6 +11,9 @@ def init():
     es = Elasticsearch([{'host': 'localhost', 'port': 9200, 'scheme': 'http'}])
     log.info('Elasticsearch initialised')
 
+def terminate():
+    es.transport.close()
+
 def migrate():
     # Deleting indexes (if exists)
     if es.indices.exists(index='chunks'):

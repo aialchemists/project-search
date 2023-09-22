@@ -23,6 +23,9 @@ def init():
     conn = connect(db_configs.get_dsn())
     log.info('Database connection established')
 
+def terminate():
+   conn.close()
+
 def migrate():
     schema = Path(os.getcwd()).joinpath('utils/db_schema.sql').read_text()
     with conn.cursor() as cursor:
