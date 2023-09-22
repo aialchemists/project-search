@@ -10,7 +10,7 @@ from psycopg2.extras import RealDictCursor
 from psycopg2.extensions import connection
 
 import json
-from typing import List
+from typing import List, Union
 
 from core.file_data import FileData
 from utils.configs import db_configs
@@ -35,9 +35,7 @@ def migrate():
 
 def save_file(data: FileData) -> int:
     with conn.cursor() as cursor:
-        metadata = json.dumps(data.metadata)
-        cursor.execute("INSERT INTO file (file_path, content) "
-                        "VALUES (%s,%s) RETURNING *", (data.file_path, data.content))
+        cursor.execute("INSERT INTO file (file_path, content) VALUES (%s,%s) RETURNING *", (data.file_path, data.content))
         conn.commit()
 
         inserted_row = cursor.fetchone()
@@ -46,6 +44,12 @@ def save_file(data: FileData) -> int:
           return inserted_row[0]
         else:
           raise Exception("Insert into file table failed")
+
+def read_file(file_id: int) -> Union[FileData, None]:
+    with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+        cursor.execute("SELECT * FROM file WHERE file_id = %s", (file_id,))
+        row = cursor.fetchone()
+        return FileData(**row) if row else None
 
 @dataclass
 class Chunk:
@@ -59,9 +63,7 @@ class Chunk:
 def save_chunk(file_id: int, chunk_text: str, embedding: List[float], start_position: int):
     chunk_length = len(chunk_text)
     with conn.cursor() as cursor:
-        cursor.execute("INSERT INTO chunk (file_id, chunk_text, embedding, start_position, length) "
-                        "VALUES (%s,%s,%s,%s,%s) RETURNING *",
-                        (file_id, chunk_text, embedding, start_position, chunk_length))
+        cursor.execute("INSERT INTO chunk (file_id, chunk_text, embedding, start_position, length) VALUES (%s,%s,%s,%s,%s) RETURNING *", (file_id, chunk_text, embedding, start_position, chunk_length))
         conn.commit()
 
         inserted_row = cursor.fetchone()
@@ -75,6 +77,12 @@ def read_chunks(chunk_ids: List[str]) -> List[Chunk]:
     ids = tuple(chunk_ids)
     with conn.cursor(cursor_factory=RealDictCursor) as cursor:
         cursor.execute("SELECT * FROM chunk WHERE chunk_id IN %s", (ids,))
+        rows = cursor.fetchall()
+        return list(map(lambda r: Chunk(**r), rows))
+
+def read_chunks_of_file(file_id: int) -> List[Chunk]:
+    with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+        cursor.execute("SELECT * FROM chunk WHERE file_id = %s", (file_id,))
         rows = cursor.fetchall()
         return list(map(lambda r: Chunk(**r), rows))
 

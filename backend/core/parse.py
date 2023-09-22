@@ -17,7 +17,7 @@ def parse_file(file_path) -> FileData:
             content = ''
             log.info(f"Content not available for file {file_path}")
 
-        return FileData(file_path=file_path, content=content, metadata=metadata)
+        return FileData(file_id=None, file_path=file_path, content=content)
     except Exception as e:
         log.error(f"An error occurred while parsing '{file_path}': {e}")
         raise e

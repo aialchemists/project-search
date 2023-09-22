@@ -20,6 +20,9 @@ docker run -p 5431:5432 --name vs-postgres -e POSTGRES_PASSWORD=mysecretpassword
 
 # Start Elasticsearch
 docker run --rm --detach -p 9200:9200 -p 9300:9300 -e "xpack.security.enabled=false" -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:8.7.0
+
+# Start RabbitMQ
+docker run -d -p 5672:5672 rabbitmq
 ```
 
 ### 3. Setup external services
@@ -34,7 +37,7 @@ Copy files into ./data directory
 
 ### 5. Run extract pipeline
 ```
-python extract_pipeline.py
+python file_scanner.py
 ```
 After a successful run, data would be available in the database.
 
@@ -47,11 +50,15 @@ nosetests --nocapture core/test_chunk.py:test_chunkify
 ```
 
 ### 7. Start services
+Each command must be run in a seperate terminal session
 ```
+# Start Celery
+celery -A tasks.extract worker --loglevel=INFO
+
 # ReRank service
 python -m services.rerank
 
-# Start API server service in another terminal session
+# Start API server service
 uvicorn services.api_server:app --reload
 ```
 
