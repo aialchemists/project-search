@@ -13,26 +13,23 @@ source vs_env/bin/activate
 pip install -r requirements.txt
 ```
 
-### 2. Start and setup database
-2.a To start postgres in docker locally
+### 2. Start external services
 ```
+# Start PostgreSQL
 docker run -p 5431:5432 --name vs-postgres -e POSTGRES_PASSWORD=mysecretpassword -d postgres
+
+# Start Elasticsearch
+docker run --rm --detach -p 9200:9200 -p 9300:9300 -e "xpack.security.enabled=false" -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:8.7.0
 ```
-2.b To create tables and setup the database
+
+### 3. Setup external services
 ```
 python -m services.migrate
 ```
 
-### 3. Load documents
+### 4. Load documents
 ```
 Copy files into ./data directory
-```
-
-### 4. ElasticSearch
-Docker command to setup the server
-
-```
- run --rm --detach -p 9200:9200 -p 9300:9300 -e "xpack.security.enabled=false" -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:8.7.0
 ```
 
 ### 5. Run extract pipeline
@@ -50,13 +47,11 @@ nosetests --nocapture core/test_chunk.py:test_chunkify
 ```
 
 ### 7. Start services
-#### ReRank service
 ```
+# ReRank service
 python -m services.rerank
-```
 
-### 8. Start Server
-```
+# Start API server service in another terminal session
 uvicorn services.api_server:app --reload
 ```
 
