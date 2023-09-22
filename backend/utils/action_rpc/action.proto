@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+message Request {
+  string action_name = 1;
+  string data = 2;
+}
+
+message Response {
+  string data = 1;
+}
+
+service Action {
+  rpc call(Request) returns (Response) {}
+}
