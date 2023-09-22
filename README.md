@@ -37,7 +37,7 @@ Copy files into ./data directory
 
 ### 5. Run extract pipeline
 ```
-python file_scanner.py
+python -m scripts.file_scanner
 ```
 After a successful run, data would be available in the database.
 
