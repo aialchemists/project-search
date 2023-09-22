@@ -3,6 +3,8 @@ from utils.logger import log
 from elasticsearch import Elasticsearch
 from typing import List
 
+from custom_types.data import Chunk
+
 es: Elasticsearch
 
 def init():
@@ -27,13 +29,13 @@ def migrate():
     # Creating chunks indices
     es.indices.create(index="chunks", mappings=mappings)
 
-def save(chunks, chunk_ids) -> List[float]:
+def save(chunks: List[Chunk]):
     # Index the chunks
-    for idx, chunk in enumerate(chunks):
+    for chunk in chunks:
         doc = {
-            "chunk_text": chunk
+            "chunk_text": chunk.chunk_text
         }
-        es.index(index="chunks", id=chunk_ids[idx], document=doc)
+        es.index(index="chunks", id=chunk.chunk_id, document=doc)
 
     es.indices.refresh(index="chunks")
 

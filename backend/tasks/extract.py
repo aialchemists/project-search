@@ -36,17 +36,9 @@ def chunk_task(file_id):
 # Extract: Step 3 - Indexing
 @app.task
 def index_task(file_id):
-    chunks_data = db.read_chunks_of_file(file_id)
-
-    # TODO: Refactor the following part, pass the chunks directly
-    chunks = []
-    chunk_ids = []
-    for chunk in chunks_data:
-        chunks.append(chunk.chunk_text)
-        chunk_ids.append(chunk.chunk_id)
-
-    elastic_search.save(chunks, chunk_ids)
-    # faiss.save(chunks, chunk_ids)
+    chunks = db.read_chunks_of_file(file_id)
+    elastic_search.save(chunks)
+    # faiss.save(chunks)
 
 @worker_process_init.connect
 def init(*args, **kwargs):
