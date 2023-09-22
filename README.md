@@ -57,7 +57,7 @@ python -m services.rerank
 
 ### 8. Start Server
 ```
-uvicorn services.server:app --reload
+uvicorn services.api_server:app --reload
 ```
 
 ## Frontend
