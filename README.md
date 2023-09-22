@@ -49,7 +49,13 @@ nosetests --nocapture
 nosetests --nocapture core/test_chunk.py:test_chunkify
 ```
 
-### 7. Start Server
+### 7. Start services
+#### ReRank service
+```
+python -m services.rerank
+```
+
+### 8. Start Server
 ```
 uvicorn services.server:app --reload
 ```
