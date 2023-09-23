@@ -33,6 +33,8 @@ const SourceLink = styled.a`
   display: inline-block;
   margin-top: 5px;
   color: #008080;
+
+  font-weight: bold;
 `;
 
 const MAX_TEXT_LENGTH = 500;
@@ -56,9 +58,9 @@ function ResultPanel({result}) {
       <div className="chunk-text">{getChunkText(result.text)}</div>
       <div className="icons">
         {result["semantic_match"] ? (
-          <SmartToyIcon fontSize="12" color="primary" />
+          <SmartToyIcon fontSize="12" color="primary" titleAccess="Semantic Match" />
         ) : (
-          <ListIcon fontSize="12" color="secondary" />
+          <ListIcon fontSize="12" color="secondary" titleAccess="Lexical Match" />
         )}
       </div>
       <SourceLink href={result.file_path} target='_blank'>{getFileName(result.file_path)}</SourceLink>
