@@ -18,6 +18,17 @@ const MainPanel = styled.section`
     text-align: center;
     font-size: 0.8em;
     font-style: italic;
+
+    img {
+      margin-bottom: 10px;
+      width: 300px;
+      border-radius: 10px;
+      opacity: 0.8;
+      transition: opacity 1s;
+      &:hover {
+        opacity: 1;
+      }
+    }
   }
 `;
 
@@ -81,6 +92,9 @@ function App() {
           </>
         ) : (
           <div className='quote-text'>
+            <img src="./cover-image.jpg" />
+            <br />
+            <br />
             At its most basic level semantic search applies meaning to the connections between the data in ways that allow a clearer understanding of them than we have ever had to date ― David Amerland
           </div>
         )}
