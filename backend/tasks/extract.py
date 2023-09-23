@@ -1,3 +1,5 @@
+import re
+
 from celery import Celery
 from celery.signals import worker_process_init, worker_process_shutdown
 
@@ -29,12 +31,11 @@ def parse_task(file_path):
 def chunk_task(file_id):
     file_data = read_file(file_id)
     if file_data:
-        chunk_ids = []
         chunks = chunk.chunkify(file_data.content)
         start_position = 0
         for chunk_text in chunks:
-            chunk_id = save_chunk(file_id, chunk_text, start_position)
-            chunk_ids.append(chunk_id)
+            if re.search('[a-zA-Z]', chunk_text):
+                save_chunk(file_id, chunk_text, start_position)
             start_position += len(chunk_text)
 
         app.send_task("tasks.extract.index_task", args=[file_id])
