@@ -1,4 +1,8 @@
 import styled from "styled-components";
+import CircularProgressWithLabel from "./CircularProgressWithLabel";
+
+import SmartToyIcon from '@mui/icons-material/SmartToy';
+import ListIcon from '@mui/icons-material/List';
 
 const Container = styled.div`
   position: relative;
@@ -7,6 +11,12 @@ const Container = styled.div`
   margin: 20px 0;
   padding: 10px;
   padding-right: 80px;
+
+  .icons {
+    display: inline-block;
+    vertical-align: sub;
+    margin-right: 5px;
+  }
 
   .score-value {
     position: absolute;
@@ -44,8 +54,17 @@ function ResultPanel({result}) {
   return (
     <Container>
       <div className="chunk-text">{getChunkText(result.text)}</div>
+      <div className="icons">
+        {result["semantic_match"] ? (
+          <SmartToyIcon fontSize="12" color="primary" />
+        ) : (
+          <ListIcon fontSize="12" color="secondary" />
+        )}
+      </div>
       <SourceLink href={result.file_path} target='_blank'>{getFileName(result.file_path)}</SourceLink>
-      <div className="score-value">{parseFloat(result.score).toFixed(2)}</div>
+      <div className="score-value">
+        <CircularProgressWithLabel value={result.score * 100} />
+      </div>
     </Container>
   );
 }
