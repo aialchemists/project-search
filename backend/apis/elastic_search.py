@@ -5,6 +5,8 @@ from typing import List
 
 from db.chunk import ChunkData
 
+INDEX_NAME = 'chunks'
+
 es: Elasticsearch
 
 def init():
@@ -18,8 +20,9 @@ def terminate():
 
 def migrate():
     # Deleting indexes (if exists)
-    if es.indices.exists(index='chunks'):
-        es.indices.delete(index='chunks')
+    if es.indices.exists(index=INDEX_NAME):
+        es.indices.delete(index=INDEX_NAME)
+        log.info(f"Deleted elastic search index named {INDEX_NAME}")
 
     mappings = {
         "properties": {
@@ -27,7 +30,8 @@ def migrate():
         }
     }
     # Creating chunks indices
-    es.indices.create(index="chunks", mappings=mappings)
+    es.indices.create(index=INDEX_NAME, mappings=mappings)
+    log.info(f"Created elastic search index named {INDEX_NAME}")
 
 def save(chunks: List[ChunkData]):
     # Index the chunks
@@ -35,9 +39,9 @@ def save(chunks: List[ChunkData]):
         doc = {
             "chunk_text": chunk.chunk_text
         }
-        es.index(index="chunks", id=chunk.chunk_id, document=doc)
+        es.index(index=INDEX_NAME, id=chunk.chunk_id, document=doc)
 
-    es.indices.refresh(index="chunks")
+    es.indices.refresh(index=INDEX_NAME)
 
 def search(user_query, top_k) -> List[int]:
     # Define search query
@@ -51,7 +55,7 @@ def search(user_query, top_k) -> List[int]:
     }
 
     # Execute the search
-    results = es.search(index="chunks", query=search_query, sort=["_score:desc"], size= top_k)
+    results = es.search(index=INDEX_NAME, query=search_query, sort=["_score:desc"], size= top_k)
 
     # Process and return the search results
     chunk_ids = []

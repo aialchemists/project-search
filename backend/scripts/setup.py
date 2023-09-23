@@ -1,6 +1,7 @@
 from utils.logger import log, print_line
 import db
 import apis.elastic_search as elastic_search
+from core.vfaiss import delete_index
 
 try:
   db.init()
@@ -13,8 +14,11 @@ print_line()
 
 schema = db.migrate()
 print(f"Schema:\n{schema}")
+log.info("DB migration complete!")
 
 elastic_search.migrate()
 
+delete_index()
+
 print_line()
-log.info("DB migration complete!")
+log.info("Setup complete!")

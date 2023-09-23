@@ -4,10 +4,10 @@ from typing import List
 from utils.logger import log
 from utils.configs import embedding_configs
 
-import faiss 
+import faiss
 from sentence_transformers import SentenceTransformer
 
-FILE_PATH = "large.index"
+INDEX_FILE_PATH = "large.index"
 
 model: SentenceTransformer
 index: faiss.IndexIDMap
@@ -19,8 +19,8 @@ def init():
     log.info('Embedding model initialised')
 
     global index
-    if os.path.isfile(FILE_PATH):
-        index = faiss.read_index(FILE_PATH)
+    if os.path.isfile(INDEX_FILE_PATH):
+        index = faiss.read_index(INDEX_FILE_PATH)
         log.info('Loaded index from file')
     else:
         l2_index = faiss.IndexFlatL2(model.get_sentence_embedding_dimension())
@@ -31,7 +31,7 @@ def build_index(chunk_texts, chunk_ids):
     corpus_vector = model.encode(chunk_texts)
     index.add_with_ids(corpus_vector, chunk_ids)
 
-    faiss.write_index(index, FILE_PATH)
+    faiss.write_index(index, INDEX_FILE_PATH)
 
 def search_index(query, top_k) -> List[int]:
     query_vectors = model.encode([query])
@@ -40,3 +40,8 @@ def search_index(query, top_k) -> List[int]:
     ids = ids[0].tolist()
     ids = [i for i in ids if i != -1]
     return ids
+
+def delete_index():
+    if os.path.isfile(INDEX_FILE_PATH):
+        os.remove(INDEX_FILE_PATH)
+        log.info(f"Deleted vector index file at {INDEX_FILE_PATH}")

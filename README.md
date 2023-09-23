@@ -27,7 +27,7 @@ docker run -d -p 5672:5672 rabbitmq
 
 #### 3. Setup external services
 ```
-python -m scripts.migrate
+python -m scripts.setup
 ```
 
 #### 4. Load documents
