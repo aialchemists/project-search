@@ -5,8 +5,9 @@ from starlette.responses import RedirectResponse
 
 import apis.elastic_search as elastic_search
 import core.cross_encoder as cross_encoder
-import utils.db as db
 import apis.rerank as rerank_api
+import db
+
 from utils.configs import configs
 
 app = FastAPI(title="Vector Search - APIs")

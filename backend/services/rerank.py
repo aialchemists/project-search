@@ -1,7 +1,8 @@
 import asyncio
 
 from utils.logger import log
-import utils.db as db
+import db
+from db.chunk import read_chunks
 import core.cross_encoder as cross_encoder
 
 from utils.action_rpc.server import ARPCServer
@@ -10,7 +11,7 @@ def rerank(data: dict) -> dict:
     chunk_ids = data["chunk_ids"]
     log.info(f"Reranking chunks - {chunk_ids}")
 
-    chunks = db.read_chunks(chunk_ids)
+    chunks = read_chunks(chunk_ids)
     chunk_texts = list(map(lambda c: c.chunk_text, chunks))
     top_pairs = cross_encoder.rank(data["user_query"], chunk_texts, data["top_k"])
 

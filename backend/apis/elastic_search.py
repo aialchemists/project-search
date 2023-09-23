@@ -3,7 +3,7 @@ from utils.logger import log
 from elasticsearch import Elasticsearch
 from typing import List
 
-from custom_types.data import Chunk
+from db.chunk import ChunkData
 
 es: Elasticsearch
 
@@ -29,7 +29,7 @@ def migrate():
     # Creating chunks indices
     es.indices.create(index="chunks", mappings=mappings)
 
-def save(chunks: List[Chunk]):
+def save(chunks: List[ChunkData]):
     # Index the chunks
     for chunk in chunks:
         doc = {
@@ -63,4 +63,3 @@ def search(user_query, top_k):
             "source": source
         })
     return search_results
-

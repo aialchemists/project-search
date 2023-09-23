@@ -3,7 +3,10 @@ from celery.signals import worker_process_init, worker_process_shutdown
 
 from utils.logger import log
 
-import utils.db as db
+import db
+from db.file import save_file, read_file
+from db.chunk import save_chunk, read_chunks_of_file
+
 import core.parse as parse
 import core.chunk as chunk
 import apis.elastic_search as elastic_search
@@ -14,20 +17,20 @@ app = Celery('extract', broker='pyamqp://guest@localhost//')
 @app.task
 def parse_task(file_path):
     file_data = parse.parse_file(file_path)
-    file_id = db.save_file(file_data)
+    file_id = save_file(file_data)
 
     app.send_task("tasks.extract.chunk_task", args=[file_id])
 
 # Extract: Step 2 - Chunking
 @app.task
 def chunk_task(file_id):
-    file_data = db.read_file(file_id)
+    file_data = read_file(file_id)
     if file_data:
         chunk_ids = []
         chunks = chunk.chunkify(file_data.content)
         start_position = 0
         for chunk_text in chunks:
-            chunk_id = db.save_chunk(file_id, chunk_text, start_position)
+            chunk_id = save_chunk(file_id, chunk_text, start_position)
             chunk_ids.append(chunk_id)
             start_position += len(chunk_text)
 
@@ -36,7 +39,7 @@ def chunk_task(file_id):
 # Extract: Step 3 - Indexing
 @app.task
 def index_task(file_id):
-    chunks = db.read_chunks_of_file(file_id)
+    chunks = read_chunks_of_file(file_id)
     elastic_search.save(chunks)
     # faiss.save(chunks)
 
