@@ -36,13 +36,16 @@ Copy files into ./data directory
 ```
 
 #### 5. Start services
-Each command must be run in a seperate terminal session
+Each command must be run in a seperate terminal
 ```
 # Start Celery
 celery -A tasks.extract worker --loglevel=INFO
 
 # ReRank service
 python -m services.rerank
+
+# FAISS service
+python -m services.vfaiss
 
 # Start API server service
 uvicorn services.api_server:app --reload
