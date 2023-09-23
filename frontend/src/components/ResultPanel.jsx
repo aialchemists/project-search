@@ -15,7 +15,9 @@ const Container = styled.div`
   .icons {
     display: inline-block;
     vertical-align: sub;
-    margin-right: 5px;
+    > * {
+      margin-right: 5px;
+    }
   }
 
   .score-value {
@@ -57,9 +59,10 @@ function ResultPanel({result}) {
     <Container>
       <div className="chunk-text">{getChunkText(result.text)}</div>
       <div className="icons">
-        {result["semantic_match"] ? (
+        {result["semantic_match"] && (
           <SmartToyIcon fontSize="12" color="primary" titleAccess="Semantic Match" />
-        ) : (
+        )}
+        {result["lexical_match"] && (
           <ListIcon fontSize="12" color="secondary" titleAccess="Lexical Match" />
         )}
       </div>

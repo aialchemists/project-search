@@ -46,6 +46,7 @@ async def search_api(query):
 
     for result in results:
         result["semantic_match"] = result["chunk_id"] in semantic_ids
+        result["lexical_match"] = result["chunk_id"] in elastic_ids
 
     return {
       "results": results,
