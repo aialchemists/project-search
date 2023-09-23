@@ -24,33 +24,33 @@ def get_sentences(text):
 
     return sents, vecs
 
-def get_clusters(sents, vecs, threshold):
-    clusters = [[0]]
+def get_group(sents, vecs, threshold):
+    group = [[0]]
     for i in range(1, len(sents)):
         if np.dot(vecs[i], vecs[i-1]) < threshold:
-            clusters.append([])
-        clusters[-1].append(i)
+            group.append([])
+        group[-1].append(i)
 
-    return clusters
+    return group
 
 def degree_to_threshold(degree:float) -> float:
     radian = degree * math.pi / 180
     threshold = math.cos(radian)
     return threshold
 
-def get_sentence_clusters(text, degree) -> List[str]:
+def get_sentence_group(text, degree) -> List[str]:
     # Process the chunk
     sents, vecs = get_sentences(text)
 
     # Cluster the sentences
     threshold = degree_to_threshold(degree)
-    clusters = get_clusters(sents, vecs, threshold)
+    group = get_group(sents, vecs, threshold)
 
-    sentence_clusters = []
-    for cluster in clusters:
-        sentence_clusters.append(' '.join([sents[i].text for i in cluster]))
+    sentence_group = []
+    for cluster in group:
+        sentence_group.append(' '.join([sents[i].text for i in cluster]))
 
-    return sentence_clusters
+    return sentence_group
 
 def divide_larger_chunks(text, piece_length):
     # Initialize an empty list to store the divided pieces
@@ -66,11 +66,11 @@ def divide_larger_chunks(text, piece_length):
 
 
 def chunkify(text, degree: float = chunk_configs.degree, recursion_level = 1) -> List[str]:
-    # Initialize the clusters lengths list and final texts list
+    # Initialize the group lengths list and final texts list
     chunks = []
 
-    sentence_clusters = get_sentence_clusters(text, degree)
-    for sentence_cluster in sentence_clusters:
+    sentence_group = get_sentence_group(text, degree)
+    for sentence_cluster in sentence_group:
         # Check if the cluster is too longs
         if len(sentence_cluster) > chunk_configs.max_length and recursion_level >= 1:
             split_chunks = chunkify(sentence_cluster, degree * 0.5, recursion_level - 1)
