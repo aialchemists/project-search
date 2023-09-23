@@ -39,7 +39,7 @@ def save(chunks: List[ChunkData]):
 
     es.indices.refresh(index="chunks")
 
-def search(user_query, top_k):
+def search(user_query, top_k) -> List[int]:
     # Define search query
     search_query = {
         "match": {
@@ -54,12 +54,7 @@ def search(user_query, top_k):
     results = es.search(index="chunks", query=search_query, sort=["_score:desc"], size= top_k)
 
     # Process and return the search results
-    search_results = []
+    chunk_ids = []
     for hit in results['hits']['hits']:
-        source = hit['_source']
-        search_results.append({
-            "document_id": hit['_id'],
-            "score": hit['_score'],
-            "source": source
-        })
-    return search_results
+        chunk_ids.append(int(hit['_id']))
+    return chunk_ids

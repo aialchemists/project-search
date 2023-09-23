@@ -28,7 +28,11 @@ def save_chunk(file_id: int, chunk_text: str, start_position: int):
           raise Exception("Insert into chunk table failed")
 
 def read_chunks(chunk_ids: List[str]) -> List[ChunkData]:
+    if len(chunk_ids) == 0:
+        return []
+
     ids = tuple(chunk_ids)
+
     with get_conn().cursor(cursor_factory=RealDictCursor) as cursor:
         cursor.execute("SELECT * FROM chunk WHERE chunk_id IN %s", (ids,))
         rows = cursor.fetchall()

@@ -12,14 +12,14 @@ def init():
     ce_model = CrossEncoder(_MODEL_NAME)
     log.info('CrossEncoder model loaded')
 
-def rank(user_query, chunks, top_k):
+def rank(user_query, chunks, chunk_ids, top_k):
     sentence_pairs = [[user_query, chunk] for chunk in chunks]
 
     # Calculate similarity using Cross encoder
     scores = ce_model.predict(sentence_pairs)
 
     # Combine the scores with sentence pairs
-    combined_scores = list(zip(sentence_pairs, scores))
+    combined_scores = list(zip(sentence_pairs, scores, chunk_ids))
 
     # Sort the pairs by Cross Encoder scores
     sorted_pairs = sorted(combined_scores, key=lambda x: x[1], reverse=True)

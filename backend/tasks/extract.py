@@ -11,6 +11,7 @@ from db.metadata import save_meta
 import core.parse as parse
 import core.chunk as chunk
 import apis.elastic_search as elastic_search
+import apis.vfaiss as vfaiss
 
 app = Celery('extract', broker='pyamqp://guest@localhost//')
 
@@ -43,7 +44,7 @@ def chunk_task(file_id):
 def index_task(file_id):
     chunks = read_chunks_of_file(file_id)
     elastic_search.save(chunks)
-    # faiss.save(chunks)
+    vfaiss.save(chunks)
 
 @worker_process_init.connect
 def init(*args, **kwargs):
@@ -51,6 +52,7 @@ def init(*args, **kwargs):
       db.init()
       chunk.init()
       elastic_search.init()
+      vfaiss.init()
     except Exception as exc:
       log.error("Exception while initialising extract pipeline", exc)
 

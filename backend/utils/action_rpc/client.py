@@ -24,3 +24,23 @@ class ARPCClient():
         response: Response = await stub.call(request)
         resp_data = json.loads(response.data)
         return resp_data
+
+class ARPCClientSync():
+    url: str
+
+    def __init__(self, url: str):
+        self.url = url
+        self.channel = grpc.insecure_channel(url)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.channel.close()
+
+    def call(self, action_name: str, data: dict) -> dict:
+        stub = ActionStub(self.channel)
+        request: Request = Request(action_name=action_name, data=json.dumps(data))
+        response: Response = stub.call(request)
+        resp_data = json.loads(response.data)
+        return resp_data

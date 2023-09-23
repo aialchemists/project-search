@@ -11,6 +11,7 @@ async def rerank_chunks(user_query: str, chunk_ids: List[str]):
     resp = await client.call("rerank", {
       "user_query": user_query,
       "chunk_ids": chunk_ids,
-      "top_k": 10
+      "top_k": 10,
+      "min_score": 0.2 # TODO: Make a configuration
     })
     return resp["chunks"]
