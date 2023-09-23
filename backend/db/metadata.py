@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from psycopg2.extras import RealDictCursor
-from typing import Union
+from typing import List
 
 from . import get_conn
 
@@ -11,7 +11,7 @@ class Metadata:
     meta_key: str
     meta_value: str
 
-def save_meta(file_id, metadata) -> int:
+def save_meta(file_id, metadata):
     with get_conn().cursor() as cursor:
         # Inserting metadata into the 'metadata' table
         metadata_entries = [
@@ -25,5 +25,10 @@ def save_meta(file_id, metadata) -> int:
                            [(file_id, key, value) for key, value in metadata_entries])
         get_conn().commit()
 
-def read_meta(file_id: int) -> Union[Metadata, None]:
-    return None
+def read_meta(file_ids) -> List[Metadata]:
+    ids = tuple(file_ids)
+
+    with get_conn().cursor(cursor_factory=RealDictCursor) as cursor:
+        cursor.execute("SELECT * FROM metadata WHERE file_id IN %s", (ids,))
+        rows = cursor.fetchall()
+        return list(map(lambda r: Metadata(**r), rows))

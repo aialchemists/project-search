@@ -1,4 +1,5 @@
 from utils.logger import log
+from typing import List
 
 from fastapi import FastAPI
 from starlette.responses import RedirectResponse
@@ -7,7 +8,9 @@ import apis.vfaiss as vfaiss
 import apis.elastic_search as elastic_search
 import core.cross_encoder as cross_encoder
 import apis.rerank as rerank_api
+
 import db
+from db.metadata import read_meta
 
 from utils.configs import configs
 
@@ -31,6 +34,25 @@ async def root_api():
 async def configs_api():
     return configs
 
+def get_facets(file_ids) -> List:
+    metadatas = read_meta(list(file_ids))
+    facet_map = {}
+    for meta in metadatas:
+        if not meta.meta_key in facet_map:
+            facet_map[meta.meta_key] = set()
+        facet_map[meta.meta_key].add(meta.meta_value)
+
+    facets = []
+    facets.append({
+        "title": "File Type",
+        "values": list(facet_map["file_type"])
+    })
+    facets.append({
+        "title": "Year",
+        "values": list(facet_map["year"])
+    })
+    return facets
+
 @app.get("/api/search")
 async def search_api(query):
     top_k = 10
@@ -44,13 +66,15 @@ async def search_api(query):
 
     results = await rerank_api.rerank_chunks(query, chunk_ids)
 
+    file_ids = set()
     for result in results:
+        file_ids.add(result["file_id"])
         result["semantic_match"] = result["chunk_id"] in semantic_ids
         result["lexical_match"] = result["chunk_id"] in elastic_ids
 
     return {
       "results": results,
-      "facets": []
+      "facets": get_facets(file_ids)
     }
 
 @app.get("/files/{file_path}")
