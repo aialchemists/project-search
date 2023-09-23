@@ -6,6 +6,7 @@ from utils.logger import log
 import db
 from db.file import save_file, read_file
 from db.chunk import save_chunk, read_chunks_of_file
+from db.metadata import save_meta
 
 import core.parse as parse
 import core.chunk as chunk
@@ -16,8 +17,9 @@ app = Celery('extract', broker='pyamqp://guest@localhost//')
 # Extract: Step 1 - Parsing
 @app.task
 def parse_task(file_path):
-    file_data = parse.parse_file(file_path)
+    file_data, metadata = parse.parse_file(file_path)
     file_id = save_file(file_data)
+    save_meta(file_id, metadata)
 
     app.send_task("tasks.extract.chunk_task", args=[file_id])
 
