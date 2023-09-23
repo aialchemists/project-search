@@ -19,6 +19,7 @@ const Container = styled.div`
 `;
 
 function FilterSelect({facet, value, onChange}) {
+  const values = facet.values.filter(val => val)
   return (
     <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
       <InputLabel id="demo-select-small-label">{facet.title}</InputLabel>
@@ -27,7 +28,7 @@ function FilterSelect({facet, value, onChange}) {
         label={facet.title}
         onChange={e => onChange(e.target.value)}
       >
-        {facet.values.map((value, index) => <MenuItem value={value} key={index}>{value}</MenuItem>)}
+        {values.map((value, index) => <MenuItem value={value} key={index}>{value}</MenuItem>)}
       </Select>
     </FormControl>
   );
