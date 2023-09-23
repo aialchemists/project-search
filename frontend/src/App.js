@@ -21,7 +21,7 @@ const MainPanel = styled.section`
 
     img {
       margin-bottom: 10px;
-      width: 300px;
+      width: 400px;
       border-radius: 10px;
       opacity: 0.8;
       transition: opacity 1s;
