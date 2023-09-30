@@ -1,0 +1,197 @@
+version: "2.2"
+
+networks:
+  supportvectors1:
+    driver: bridge
+
+volumes:
+  esdata01:
+    driver: local
+  esdata02:
+    driver: local
+  esdata03:
+    driver: local
+  kibanadata:
+    driver: local
+  pgvolume:
+    driver: local
+
+services:
+  es01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    container_name: es01
+    volumes:
+      - esdata01:/usr/share/elasticsearch/data
+    ports:
+      - ${ELASTICSEARCH_PORT}:9200
+    environment:
+      - node.name=es01
+      - cluster.name=${CLUSTER_NAME}
+      - cluster.initial_master_nodes=es01,es02,es03
+      - discovery.seed_hosts=es02,es03
+      - ELASTIC_USERNAME=${ELASTICSEARCH_USERNAME}
+      - ELASTIC_PASSWORD=${ELASTICSEARCH_PASSWORD}
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+      - xpack.license.self_generated.type=${LICENSE}
+    networks:
+      - supportvectors1
+    mem_limit: ${MEM_LIMIT}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+  es02:
+    depends_on:
+      - es01
+    container_name: es02
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    volumes:
+      - esdata02:/usr/share/elasticsearch/data
+    environment:
+      - node.name=es02
+      - cluster.name=${CLUSTER_NAME}
+      - cluster.initial_master_nodes=es01,es02,es03
+      - discovery.seed_hosts=es01,es03
+      - ELASTIC_USERNAME=${ELASTICSEARCH_USERNAME}
+      - ELASTIC_PASSWORD=${ELASTICSEARCH_PASSWORD}
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+      - xpack.license.self_generated.type=${LICENSE}
+    networks:
+      - supportvectors1
+    mem_limit: ${MEM_LIMIT}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+  es03:
+    depends_on:
+      - es02
+    container_name: es03
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    volumes:
+      - esdata03:/usr/share/elasticsearch/data
+    environment:
+      - node.name=es03
+      - cluster.name=${CLUSTER_NAME}
+      - cluster.initial_master_nodes=es01,es02,es03
+      - discovery.seed_hosts=es01,es02
+      - ELASTIC_USERNAME=${ELASTICSEARCH_USERNAME}
+      - ELASTIC_PASSWORD=${ELASTICSEARCH_PASSWORD}
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+      - xpack.license.self_generated.type=${LICENSE}
+    networks:
+      - supportvectors1
+    mem_limit: ${MEM_LIMIT}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
+    volumes:
+      - kibanadata:/usr/share/kibana/data
+    ports:
+      - ${KIBANA_PORT}:5601
+    environment:
+      - SERVERNAME=kibana
+      - ELASTICSEARCH_HOSTS=http://es01:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
+    networks:
+      - supportvectors1
+    mem_limit: ${MEM_LIMIT}
+
+  postgres:
+    container_name: ${POSTGRES_HOST}
+    image: postgres:14.1-alpine
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_SSLMODE='disable'
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes: 
+      - ${POSTGRES_VOLUME}:/var/lib/postgresql/data
+    networks:
+      - supportvectors1
+
+  tika1:
+    container_name: tika1
+    image: apache/tika:2.7.0.0
+    ports:
+      - "9997:9998"
+    environment:
+      - TIKA_SERVER_LOG=trace
+      - HOSTNAME=tika1
+    networks:
+      - supportvectors1
+
+  tika2:
+    container_name: tika2
+    image: apache/tika:2.7.0.0
+    ports:
+      - "9998:9998"
+    environment:
+      - TIKA_SERVER_LOG=trace
+      - HOSTNAME=tika2
+    networks:
+      - supportvectors1
+
+  tika3:
+    container_name: tika3
+    image: apache/tika:2.7.0.0
+    ports:
+      - "9999:9998"
+    environment:
+      - TIKA_SERVER_LOG=trace
+      - HOSTNAME=tika3
+    networks:
+      - supportvectors1
+
+  tikaservers:
+    container_name: ${TIKASERVERS_HOST}
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "${TIKASERVERS_PORT}:80"
+    networks:
+      - supportvectors1
+    depends_on:
+      - tika1
+      - tika2
+      - tika3
+
+  redis:
+    container_name: ${REDIS_HOST}
+    image: redis:latest
+    ports:
+      - "${REDIS_PORT}:6379"
+    networks:
+      - supportvectors1
+
+  jupyter:
+    container_name: ${JUPYTER_HOST}
+    image: jupyter/base-notebook:latest
+    ports:
+      - "${JUPYTER_PORT}:8888"
+    volumes:
+      - ./notebooks:/home/prakash/work
+    environment:
+      - JUPYTER_ENABLE_LAB=yes  # Set this to "no" if you want classic notebook
+    networks:
+      - supportvectors1
