@@ -12,6 +12,12 @@ const Container = styled.div`
   padding: 10px;
   padding-right: 80px;
 
+  img {
+    height: 50px;
+    border-radius: 5px;
+    border: 1px solid #666;
+  }
+
   .icons {
     display: inline-block;
     vertical-align: sub;
@@ -55,9 +61,16 @@ function getFileName(path) {
 }
 
 function ResultPanel({result}) {
+  const file_path = `/files/${result.file_path}`
   return (
     <Container>
-      <div className="chunk-text">{getChunkText(result.text)}</div>
+      <div className="chunk-content">
+        {result.file_type === "image" ? (
+            <SourceLink href={file_path} target='_blank'><img src={file_path} alt={result.text} /></SourceLink>
+        ) : (
+          <span>{getChunkText(result.text)}</span>
+        )}
+      </div>
       <div className="icons">
         {result["semantic_match"] && (
           <SmartToyIcon fontSize="12" color="primary" titleAccess="Semantic Match" />
@@ -66,7 +79,7 @@ function ResultPanel({result}) {
           <ListIcon fontSize="12" color="secondary" titleAccess="Lexical Match" />
         )}
       </div>
-      <SourceLink href={result.file_path} target='_blank'>{getFileName(result.file_path)}</SourceLink>
+      <SourceLink href={file_path} target='_blank'>{getFileName(result.file_path)}</SourceLink>
       <div className="score-value">
         <CircularProgressWithLabel value={result.score * 100} />
       </div>
