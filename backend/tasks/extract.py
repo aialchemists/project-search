@@ -1,19 +1,21 @@
 import re
+import json
 
 from celery import Celery
 from celery.signals import worker_process_init, worker_process_shutdown
 
 from utils.logger import log
+from utils.file import FileType
 
 import db
 from db.file import save_file, read_file
 from db.chunk import save_chunk, read_chunks_of_file
 from db.metadata import save_meta
 
-import core.parse as parse
 import core.chunk as chunk
 import apis.elastic_search as elastic_search
 import apis.vfaiss as vfaiss
+import apis.parse as parse
 
 app = Celery('extract', broker='pyamqp://guest@localhost//')
 
@@ -24,14 +26,16 @@ def parse_task(file_path):
     file_id = save_file(file_data)
     save_meta(file_id, metadata)
 
-    app.send_task("tasks.extract.chunk_task", args=[file_id])
+    if file_data.file_type in [FileType.TEXT, FileType.IMAGE]:
+        app.send_task("tasks.extract.chunk_task", args=[file_id])
 
 # Extract: Step 2 - Chunking
 @app.task
 def chunk_task(file_id):
     file_data = read_file(file_id)
     if file_data:
-        chunks = chunk.chunkify(file_data.content)
+        content = json.loads(file_data.content)
+        chunks = chunk.chunkify(content)
         start_position = 0
         for chunk_text in chunks:
             if re.search('[a-zA-Z]', chunk_text):
@@ -51,9 +55,11 @@ def index_task(file_id):
 def init(*args, **kwargs):
     try:
       db.init()
+      parse.init()
       chunk.init()
       elastic_search.init()
       vfaiss.init()
+      log.info("--- Tasks initialised ------------------------------")
     except Exception as exc:
       log.error("Exception while initialising extract pipeline", exc)
 

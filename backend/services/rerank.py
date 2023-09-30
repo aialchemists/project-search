@@ -38,6 +38,7 @@ def rerank(data: dict) -> dict:
             if score >= min_score:
                 chunks.append({
                     "chunk_id": chunk_id,
+                    "file_type": file_data.file_type if file_data else None,
                     "file_id": file_data.file_id if file_data else None,
                     "file_path": file_data.file_path if file_data else "",
                     "text": pair[0][1],

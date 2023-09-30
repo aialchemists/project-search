@@ -1,7 +1,9 @@
 from utils.logger import log
+from utils.configs import DATA_DIR
+
+import json
 
 from tika import parser
-import json
 from PIL import Image
 from transformers import BlipProcessor, BlipForConditionalGeneration
 import whisper
@@ -30,7 +32,7 @@ def init():
     global audio_model
     audio_model = whisper.load_model("large").to(device)
 
-def parse_file(file_path) -> FileData:
+def parse_file(file_path) -> tuple[FileData, dict]:
     try:
         content = None
 
@@ -47,7 +49,9 @@ def parse_file(file_path) -> FileData:
         results = parser.from_file(file_path)
         metadata = extract_metadata(results['metadata'])
 
-        return FileData(file_id=None, file_path=file_path, content=json.dumps(content)), metadata
+        file_path = file_path.replace(DATA_DIR, '')
+
+        return FileData(file_type=file_type, file_path=file_path, content=json.dumps(content)), metadata
     except Exception as e:
         log.error(f"An error occurred while parsing '{file_path}': {e}")
         raise e
@@ -62,22 +66,21 @@ def parse_text(file_path):
     else:
         content = ''
         log.info(f"Content not available for file {file_path}")
-    
+
     return content
-    
+
 def parse_image(file_path):
     # Generate caption as content from image
     image = Image.open(file_path).convert('RGB')
     inputs = image_processor(image, return_tensors="pt")
     out = image_model.generate(**inputs, max_new_tokens=100)
     caption = image_processor.decode(out[0], skip_special_tokens=True)
-
     return caption
 
 def parse_audio(file_path):
     # Transcribe the audio as content
     audio_transcription = audio_model.transcribe(file_path)
-    
+
     content = []
 
     for segment in audio_transcription['segments']:
@@ -86,8 +89,8 @@ def parse_audio(file_path):
             "start_time": segment['start'],
             "end_time": segment['end']
         })
-    
+
     return content
-        
+
 def parse_video(file_path):
     return parse_audio(file_path)
