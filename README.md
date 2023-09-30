@@ -6,10 +6,16 @@ All the following commands must be run inside `./backend`
 #### 1. Create a virtual environment and install pip dependencies
 Ensure you have python 3.9.16
 ```
+# With virtualenv
 pip install virtualenv
 virtualenv vs_env
 source vs_env/bin/activate
 
+#Conda
+conda create --name vsenv python=3.9.16
+conda activate vsenv
+
+brew install libmagic
 pip install -r requirements.txt
 ```
 
