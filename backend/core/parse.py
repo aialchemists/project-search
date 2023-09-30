@@ -86,8 +86,8 @@ def parse_audio(file_path):
     for segment in audio_transcription['segments']:
         content.append({
             "text": segment['text'],
-            "start_time": segment['start'],
-            "end_time": segment['end']
+            "start_time": segment['start'] * 1000,
+            "end_time": segment['end'] * 1000
         })
 
     return content

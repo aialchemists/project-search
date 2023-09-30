@@ -14,10 +14,9 @@ class ChunkData:
    start_position: int
    length: int
 
-def save_chunk(file_id: int, chunk_text: str, start_position: int):
-    chunk_length = len(chunk_text)
+def save_chunk(file_id: int, chunk_text: str, start_position: int, length: int):
     with get_conn().cursor() as cursor:
-        cursor.execute("INSERT INTO chunk (file_id, chunk_text, start_position, length) VALUES (%s,%s,%s,%s) RETURNING *", (file_id, chunk_text, start_position, chunk_length))
+        cursor.execute("INSERT INTO chunk (file_id, chunk_text, start_position, length) VALUES (%s,%s,%s,%s) RETURNING *", (file_id, chunk_text, start_position, length))
         get_conn().commit()
 
         inserted_row = cursor.fetchone()
@@ -36,6 +35,7 @@ def read_chunks(chunk_ids: List[str]) -> List[ChunkData]:
     with get_conn().cursor(cursor_factory=RealDictCursor) as cursor:
         cursor.execute("SELECT * FROM chunk WHERE chunk_id IN %s", (ids,))
         rows = cursor.fetchall()
+
         return list(map(lambda r: ChunkData(**r), rows))
 
 def read_chunks_of_file(file_id: int) -> List[ChunkData]:

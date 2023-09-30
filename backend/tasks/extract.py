@@ -28,6 +28,8 @@ def parse_task(file_path):
 
     if file_data.file_type in [FileType.TEXT, FileType.IMAGE]:
         app.send_task("tasks.extract.chunk_task", args=[file_id])
+    elif file_data.file_type in [FileType.AUDIO, FileType.VIDEO]:
+        app.send_task("tasks.extract.chunk_av_task", args=[file_id])
 
 # Extract: Step 2 - Chunking
 @app.task
@@ -39,8 +41,18 @@ def chunk_task(file_id):
         start_position = 0
         for chunk_text in chunks:
             if re.search('[a-zA-Z]', chunk_text):
-                save_chunk(file_id, chunk_text, start_position)
+                save_chunk(file_id, chunk_text, start_position, len(chunk_text))
             start_position += len(chunk_text)
+
+        app.send_task("tasks.extract.index_task", args=[file_id])
+
+@app.task
+def chunk_av_task(file_id):
+    file_data = read_file(file_id)
+    if file_data:
+        content = json.loads(file_data.content)
+        for chunk in content:
+            save_chunk(file_id, chunk["text"], chunk["start_time"], chunk["end_time"] - chunk["start_time"])
 
         app.send_task("tasks.extract.index_task", args=[file_id])
 

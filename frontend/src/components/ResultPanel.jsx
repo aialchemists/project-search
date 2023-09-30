@@ -12,10 +12,11 @@ const Container = styled.div`
   padding: 10px;
   padding-right: 80px;
 
-  img {
+  img, audio {
     height: 50px;
     border-radius: 5px;
     border: 1px solid #666;
+    background-color: rgb(241, 243, 244);
   }
 
   .icons {
@@ -60,17 +61,31 @@ function getFileName(path) {
   return parts[parts.length - 1];
 }
 
+function renderChunkContent(result, file_path) {
+  switch(result.file_type) {
+    case "image":
+      return (
+        <SourceLink href={file_path} target='_blank'><img src={file_path} alt={result.text} /></SourceLink>
+      );
+    case "audio":
+      return (
+        <audio controls>
+          <source src={file_path} />
+          Your browser does not support the audio element.
+        </audio>
+      );
+    default:
+      return (
+        <span>{getChunkText(result.text)}</span>
+      );
+  }
+}
+
 function ResultPanel({result}) {
   const file_path = `/files/${result.file_path}`
   return (
     <Container>
-      <div className="chunk-content">
-        {result.file_type === "image" ? (
-            <SourceLink href={file_path} target='_blank'><img src={file_path} alt={result.text} /></SourceLink>
-        ) : (
-          <span>{getChunkText(result.text)}</span>
-        )}
-      </div>
+      <div className="chunk-content">{renderChunkContent(result, file_path)}</div>
       <div className="icons">
         {result["semantic_match"] && (
           <SmartToyIcon fontSize="12" color="primary" titleAccess="Semantic Match" />
