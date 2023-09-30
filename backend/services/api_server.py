@@ -3,6 +3,7 @@ from typing import List
 
 from fastapi import FastAPI
 from starlette.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
 
 import apis.vfaiss as vfaiss
 import apis.elastic_search as elastic_search
@@ -15,6 +16,8 @@ from db.metadata import read_meta
 from utils.configs import configs
 
 app = FastAPI(title="Vector Search - APIs")
+
+app.mount("/files", StaticFiles(directory="data"), name="files")
 
 try:
     db.init()
@@ -75,10 +78,4 @@ async def search_api(query):
     return {
       "results": results,
       "facets": get_facets(file_ids)
-    }
-
-@app.get("/files/{file_path}")
-async def files_api(file_path):
-    return {
-      "file_path": file_path
     }
