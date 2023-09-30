@@ -1,6 +1,8 @@
 from utils.logger import log
 import os
 
+from utils.configs import DATA_DIR
+
 from tasks.extract import parse_task
 
 def scan_local_dir(directory_path):
@@ -15,4 +17,4 @@ def scan_local_dir(directory_path):
     else:
         log.error(f"'{directory_path}' is not a valid directory path.")
 
-scan_local_dir("./data/")
+scan_local_dir(DATA_DIR)

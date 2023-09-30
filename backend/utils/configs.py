@@ -1,6 +1,8 @@
 import json
 from dataclasses import dataclass
 
+DATA_DIR = "./data/"
+
 _file = open('./configs.json')
 configs = json.load(_file)
 

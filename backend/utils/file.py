@@ -1,5 +1,6 @@
 from enum import Enum
 
+import os
 import magic
 
 class FileType(str, Enum):
@@ -13,7 +14,7 @@ def detect_file_type(file_path) -> FileType:
     # Create a magic object to detect file type
     mime = magic.Magic(mime=True)
     file_mime = mime.from_file(file_path)
-    
+
     if file_mime.startswith("text/") or file_mime.startswith("application/pdf") \
         or file_mime.startswith("application/msword") or file_mime.startswith("text/html"):
         return FileType.TEXT
