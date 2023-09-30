@@ -5,6 +5,7 @@ file - Each row is a file that we have extracted
 */
 create table file (
   file_id SERIAL UNIQUE,
+  file_type VARCHAR(10),
   file_path TEXT,
   content TEXT,
 

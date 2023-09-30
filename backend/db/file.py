@@ -1,3 +1,4 @@
+from typing import Optional
 from dataclasses import dataclass
 from utils.logger import log
 
@@ -8,13 +9,14 @@ from typing import Union
 
 @dataclass
 class FileData:
-    file_id: int
+    file_type: str
     file_path: str
     content: str
+    file_id: Optional[int] = None
 
 def save_file(data: FileData) -> int:
     with get_conn().cursor() as cursor:
-        cursor.execute("INSERT INTO file (file_path, content) VALUES (%s,%s) RETURNING *", (data.file_path, data.content))
+        cursor.execute("INSERT INTO file (file_type, file_path, content) VALUES (%s,%s,%s) RETURNING *", (data.file_type, data.file_path, data.content))
         get_conn().commit()
 
         inserted_row = cursor.fetchone()
