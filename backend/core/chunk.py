@@ -3,11 +3,16 @@ from utils.logger import log
 import numpy as np
 import spacy
 import math
+from sentence_transformers import SentenceTransformer
+import re
 
 from typing import List, Callable
 from utils.configs import chunk_configs
+from utils.configs import embedding_configs
 
-_MODEL_NAME = 'en_core_web_lg'
+
+#_MODEL_NAME = 'en_core_web_lg'
+_MODEL_NAME = 'xx_ent_wiki_sm'
 
 nlp: Callable
 
@@ -15,19 +20,28 @@ def init():
     log.info(f"Loading Spacy model {_MODEL_NAME}")
     global nlp
     nlp = spacy.load(_MODEL_NAME)
+    nlp.add_pipe('sentencizer')
     log.info('Spacy model loaded')
 
 def get_sentences(text):
     doc = nlp(text)
     sents = list(doc.sents)
-    vecs = np.stack([sent.vector / sent.vector_norm for sent in sents])
-
+    model = SentenceTransformer(embedding_configs.model)
+    vecs =  model.encode(sents)
     return sents, vecs
 
 def get_group(sents, vecs, threshold):
     group = [[0]]
     for i in range(1, len(sents)):
-        if np.dot(vecs[i], vecs[i-1]) < threshold:
+        # Calculate dot product and vector norms
+        dot_product = np.dot(vecs[i], vecs[i - 1])
+        norm_i = np.linalg.norm(vecs[i])
+        norm_i_minus_1 = np.linalg.norm(vecs[i - 1])
+
+        # Calculate cosine similarity
+        cosine_similarity = dot_product / (norm_i * norm_i_minus_1)
+
+        if cosine_similarity < threshold:
             group.append([])
         group[-1].append(i)
 
@@ -69,14 +83,17 @@ def chunkify(text, degree: float = chunk_configs.degree, recursion_level = 1) ->
     # Initialize the group lengths list and final texts list
     chunks = []
 
+    # Data cleaning
+    text = re.sub(r'[\n\t]', ' ', text)
+
     sentence_group = get_sentence_group(text, degree)
-    for sentence_cluster in sentence_group:
+    for s_group in sentence_group:
         # Check if the cluster is too longs
-        if len(sentence_cluster) > chunk_configs.max_length and recursion_level >= 1:
-            split_chunks = chunkify(sentence_cluster, degree * 0.5, recursion_level - 1)
+        if len(s_group) > chunk_configs.max_length and recursion_level >= 1:
+            split_chunks = chunkify(s_group, degree * 0.5, recursion_level - 1)
             chunks.extend(split_chunks)
         else:
-            chunks.append(sentence_cluster)
+            chunks.append(s_group)
 
     final_chunks = []
     for chunk in chunks:

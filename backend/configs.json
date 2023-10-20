@@ -7,10 +7,10 @@
     "dbname": "postgres"
   },
   "chunk": {
-    "max_length": 2400,
-    "degree": 45
+    "max_length": 1500,
+    "degree": 75
   },
   "embedding": {
-    "model": "multi-qa-mpnet-base-dot-v1"
+    "model": "distiluse-base-multilingual-cased-v2"
   }
 }

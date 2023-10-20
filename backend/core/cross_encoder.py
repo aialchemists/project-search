@@ -2,7 +2,7 @@ from utils.logger import log
 
 from sentence_transformers import CrossEncoder
 
-_MODEL_NAME = 'cross-encoder/stsb-roberta-large'
+_MODEL_NAME = 'cross-encoder/ms-marco-MiniLM-L-2-v2'
 
 ce_model: CrossEncoder
 
