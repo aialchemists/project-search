@@ -8,6 +8,9 @@ def init():
     client = ARPCClient("localhost:50051")
 
 async def rerank_chunks(user_query: str, chunk_ids: List[str]):
+    if len(chunk_ids) == 0:
+        return []
+
     resp = await client.call("rerank", {
       "user_query": user_query,
       "chunk_ids": chunk_ids,

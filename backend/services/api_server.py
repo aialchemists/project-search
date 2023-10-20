@@ -38,6 +38,9 @@ async def configs_api():
     return configs
 
 def get_facets(file_ids) -> List:
+    if len(file_ids) == 0:
+        return []
+
     metadatas = read_meta(list(file_ids))
     facet_map = {}
     for meta in metadatas:
