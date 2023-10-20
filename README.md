@@ -15,6 +15,7 @@ source vs_env/bin/activate
 conda create --name vsenv python=3.9.16
 conda activate vsenv
 
+brew install ffmpeg
 brew install libmagic
 pip install -r requirements.txt
 ```
