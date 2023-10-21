@@ -1,4 +1,11 @@
 /**
+  Drop tables
+*/
+drop table if exists chunk cascade;
+drop table if exists metadata cascade;
+drop table if exists file cascade;
+
+/**
 file - Each row is a file that we have extracted
   - file_id       - Primary-key, Auto incrementing
   - file_path     - Stores the path to the file
