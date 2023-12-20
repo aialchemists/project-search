@@ -31,8 +31,8 @@ Ensure you have python 3.9.16
 ```
 # Using virtualenv
 pip install virtualenv
-virtualenv venv
-source venv/bin/activate
+virtualenv vs_env
+source vs_env/bin/activate
 
 OR
 
